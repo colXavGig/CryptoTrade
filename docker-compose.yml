@@ -33,6 +33,7 @@ services:
     ports:
       - "3306:3306"  # Expose MySQL on localhost
     volumes:
+      - ./db/crypto_db.sql:/crypto_db.sql
       - mysql_data:/var/lib/mysql  # Persistent MySQL data
       - mysql_log/mysql:/var/log/mysql  # MySQL logs
     networks:
