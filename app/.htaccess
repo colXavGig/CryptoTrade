@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Redirect everything except existing files/folders to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ index.php?route=$1 [QSA,L]  # Change 'url' to 'route'
+
+# Protect .env file
+<FilesMatch "^\.env">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

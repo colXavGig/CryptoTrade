@@ -1,0 +1,57 @@
+services:
+  apache:
+    build: 
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: CryptoTrade_apache
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./docker/apache2/apache.conf:/etc/apache2/sites-available/000-default.conf
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/logs/apache2:/var/log/apache2  # Apache logs
+      - ./docker/logs/php:/var/log/php  # PHP logs
+    env_file:
+      - ./app/.env # Load environment variables from .env file
+    depends_on:
+      - mysql 
+    networks:
+      - cryptoTrade_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: CryptoTrade_mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: crypto_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - "3306:3306"  # Expose MySQL on localhost
+    volumes:
+      - ./db/mysql_data:/var/lib/mysql  # Persistent MySQL data
+      - ./docker/logs/mysql:/var/log/mysql  # MySQL logs
+    networks:
+      - cryptoTrade_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: labo4_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"  # Access phpMyAdmin at localhost:8081
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - mysql
+    networks:
+      - cryptoTrade_network
+
+networks:
+  cryptoTrade_network:
+    driver: bridge
