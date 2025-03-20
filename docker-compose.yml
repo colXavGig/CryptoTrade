@@ -11,8 +11,6 @@ services:
       - ./app:/var/www/html
       - ./docker/apache2/apache.conf:/etc/apache2/sites-available/000-default.conf
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
-      - ./docker/logs/apache2:/var/log/apache2  # Apache logs
-      - ./docker/logs/php:/var/log/php  # PHP logs
     env_file:
       - ./app/.env # Load environment variables from .env file
     depends_on:
@@ -35,7 +33,6 @@ services:
     volumes:
       - ./db/crypto_db.sql:/crypto_db.sql
       - mysql_data:/var/lib/mysql  # Persistent MySQL data
-      - mysql_log/mysql:/var/log/mysql  # MySQL logs
     networks:
       - cryptoTrade_network
 
@@ -59,4 +56,3 @@ networks:
 
 volumes:
   mysql_data:
-  mysql_log:
