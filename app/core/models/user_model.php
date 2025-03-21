@@ -64,7 +64,7 @@ class User extends model {
 
         // Default balance and two-factor status
         $data['balance'] = isset($data['balance']) ? $data['balance'] : 0.00;
-        $data['two_factor_enabled'] = isset($data['two_factor_enabled']) ? $data['two_factor_enabled'] : false;
+        $data['two_factor_enabled'] = isset($data['two_factor_enabled']) ? $data['two_factor_enabled'] : true; // TODO: Implement two-factor authentication
 
         return parent::insert($data);
     }

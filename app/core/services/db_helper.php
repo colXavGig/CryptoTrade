@@ -18,7 +18,7 @@ class Database {
 
             // Retrieve database credentials from .env
             $host = $_ENV['DB_HOST'] ?? 'localhost';
-            $dbname = $_ENV['DB_NAME'] ?? 'gestion_utilisateurs';
+            $dbname = $_ENV['DB_NAME'] ?? 'crypto_db';
             $username = $_ENV['DB_USER'] ?? 'root';
             $password = $_ENV['DB_PASSWORD'] ?? '';
             $charset = 'utf8mb4';

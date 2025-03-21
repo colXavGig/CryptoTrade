@@ -9,14 +9,18 @@
     </div>
 
     <div class="form-group">
-        <label for="password">Password</label> <!-- Fixed name -->
+        <label for="password">Password</label>
         <input type="password" name="password" id="password" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Confirm Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
     </div>
 
     <button type="submit">Register</button>
 </form>
 
-<p id="error-message" style="color: red;"></p>
+<p id="error-message" class="fade" style="color: red;"></p>
 
 <style>
     #register-form {
@@ -56,4 +60,45 @@
     button:hover {
         background: #0056b3;
     }
+
+    /* Animation for the error message */
+    .fade {
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        height: 1rem;
+    }
+
+    .fade.show {
+        opacity: 1;
+    }
 </style>
+
+<script>
+    const form = document.getElementById('register-form');
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirm_password');
+    const errorMessage = document.getElementById('error-message');
+
+    function checkMatch() {
+        if (confirmInput.value && passwordInput.value !== confirmInput.value) {
+            errorMessage.textContent = "Passwords do not match.";
+            errorMessage.classList.add("show");
+            return false;
+        } else {
+            errorMessage.textContent = "";
+            errorMessage.classList.remove("show");
+            return true;
+        }
+    }
+
+    // Live typing check
+    passwordInput.addEventListener('input', checkMatch);
+    confirmInput.addEventListener('input', checkMatch);
+
+    // Prevent form submission if passwords don't match
+    form.addEventListener('submit', function (e) {
+        if (!checkMatch()) {
+            e.preventDefault();
+        }
+    });
+</script>

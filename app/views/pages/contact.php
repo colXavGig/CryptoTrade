@@ -15,8 +15,8 @@ $user_email = '';
 if (isset($_SESSION['jwt'])) {
     $user = JWTService::getUserFromToken($_SESSION['jwt']);
     if ($user) {
-        $user_name = htmlspecialchars($user['user_name']); // Prevent XSS
-        $user_email = htmlspecialchars($user['email']);
+        $user_name = $user['email']; // Use email as name
+        $user_email = $user['email'];
     }
 }
 

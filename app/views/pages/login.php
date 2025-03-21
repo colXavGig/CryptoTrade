@@ -4,7 +4,7 @@
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
     <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" name="email" id="email" required>
+        <input type="text" name="email" id="email" required> <!-- Fixed type (to enable entries without email pattern) -->
     </div>
     <div class="form-group">
         <label for="password">Password</label> <!-- Fixed name -->

@@ -10,7 +10,7 @@
         $user = JWTService::getUserFromToken($_SESSION['jwt']);
     ?>
         <li><a href="profile" class="spa-link">Profile</a></li>
-        <li><?php echo "Welcome " . $user['user_name']; ?></li>
+        <li><?php echo "Welcome " . $user['email']; ?></li>
         <li><a href="#" id="logout-link">Logout</a></li>
 
     <?php else : ?>

@@ -67,26 +67,31 @@ class UserController {
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Validate input fields
-                if (empty($_POST['email']) || empty($_POST['password'])) {
-                    throw new Exception("Email and password are required.");
+                if (empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm_password'])) {  
+                    throw new Exception("Email, password, and confirmation are required.");
+                }
+
+                if ($_POST['password'] !== $_POST['confirm_password']) {
+                    throw new Exception("Passwords do not match.");
                 }
 
                 $data = [
                     'email' => trim($_POST['email']),
                     'password_hash' => password_hash($_POST['password'], PASSWORD_DEFAULT),
                     'role' => $_POST['role'] ?? 'user',
-                    'balance' => 0.00, // Default balance
-                    'two_factor_enabled' => $_POST['two_factor_enabled'] ?? false
+                    'balance' => 0.00,
+                    'two_factor_enabled' => $_POST['two_factor_enabled'] ?? true
                 ];
 
-                // Register user
                 $userId = $this->userModel->register($data);
                 echo json_encode(['success' => true, 'user_id' => $userId]);
+
             } catch (Exception $e) {
                 echo json_encode(['success' => false, 'error' => $e->getMessage()]);
             }
         }
+
+        echo "<script>window.location.href = '/';</script>";
     }
 
     /**
@@ -119,6 +124,10 @@ class UserController {
                 echo json_encode(['success' => false, 'error' => $e->getMessage()]);
             }
         }
+        // redirect to home page JS
+        echo "<script>window.location.href = '/';</script>";
+        
+        
     }
 
     /**
