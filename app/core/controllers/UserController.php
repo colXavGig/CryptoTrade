@@ -1,16 +1,16 @@
 <?php
 
-require_once __DIR__ . '/../models/user_model.php';
+require_once __DIR__ . '/../data_access/UserRepository.php';
 require_once __DIR__ . '/../services/auth.php';
 require_once __DIR__ . '/../services/jwt_service.php';
 
 class UserController {
 
-    private $userModel;
+    private $userRepository;
 
     public function __construct()
     {
-        $this->userModel = new User();
+        $this->userRepository = new UserRepository();
 
         // Automatically check CSRF token for all POST requests
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -53,7 +53,7 @@ class UserController {
         $this->checkAdmin(); // Only admin can access
 
         try {
-            $users = $this->userModel->get_all();
+            $users = $this->userRepository->get_all();
             echo json_encode(['success' => true, 'users' => $users]);
         } catch (Exception $e) {
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
@@ -83,7 +83,7 @@ class UserController {
                     'two_factor_enabled' => $_POST['two_factor_enabled'] ?? true
                 ];
 
-                $userId = $this->userModel->register($data);
+                $userId = $this->userRepository->register($data);
                 echo json_encode(['success' => true, 'user_id' => $userId]);
 
             } catch (Exception $e) {
@@ -158,7 +158,7 @@ class UserController {
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['email'])) {
             try {
                 $email = trim($_GET['email']);
-                $user = $this->userModel->get_by_email($email);
+                $user = $this->userRepository->get_by_email($email);
 
                 if ($user) {
                     echo json_encode(['success' => true, 'user' => $user]);
@@ -214,7 +214,7 @@ class UserController {
                     'two_factor_enabled' => $_POST['two_factor_enabled'] ?? false
                 ];
 
-                $userId = $this->userModel->update($data);
+                $userId = $this->userRepository->update($data);
                 echo json_encode(['success' => true, 'user_id' => $userId]);
             } catch (Exception $e) {
                 echo json_encode(['success' => false, 'error' => $e->getMessage()]);
@@ -236,7 +236,7 @@ class UserController {
                 }
 
                 $id = trim($_POST['id']);
-                $userId = $this->userModel->delete($id);
+                $userId = $this->userRepository->delete($id);
                 echo json_encode(['success' => true, 'user_id' => $userId]);
             } catch (Exception $e) {
                 echo json_encode(['success' => false, 'error' => $e->getMessage()]);

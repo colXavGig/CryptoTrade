@@ -1,6 +1,6 @@
 <?php
 
-abstract class model
+abstract class Repository
 {
     protected $db;
     protected $table;

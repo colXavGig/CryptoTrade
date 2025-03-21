@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/model.php';
+require_once __DIR__ . '/Repository.php';
 require_once __DIR__ . '/../services/auth.php';
 require_once __DIR__ . '/../services/db_helper.php';
 
-class User extends model {
+class UserRepository extends Repository {
     
     public function __construct()
     {
