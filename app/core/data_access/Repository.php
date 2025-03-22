@@ -1,33 +1,65 @@
 <?php
+namespace CryptoTrade\DataAccess;
+use App\Services\Database;
+use InvalidArgumentException;
+use PDO;
+
+require_once __DIR__ . '/Repository.php';
+require_once __DIR__ . '/../services/auth.php';
 
 abstract class Repository
 {
+    private static $instance;
     protected $db;
     protected $table;
     protected $columns;
 
-    public function __construct()
+    protected function __construct()
     {
         $this->db = Database::getConnection();
     }
 
-    public function get_all()
+    public static function getInstance() : self {
+        if (!isset(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+
+    protected function whereStatement($where) : string
+    {
+        $whereStatement = 'WHERE ';
+        foreach ($where as $key => $value) {
+            assert(is_string($key));
+            assert(in_array($key, $this->columns));
+            $whereStatement .= $key . ' = ' . $value . ' AND ';
+        }
+        return substr($whereStatement, 0, - strlen(' AND '));
+    }
+    public function get_all(): array
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table);
         $query->execute();
         return $query->fetchAll();
     }
 
-    public function get_by_id($id)
+    public function get_by_id(int $id)
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE id = :id');
         $query->execute(['id' => $id]);
         return $query->fetch();
     }
 
-    public function insert($data)
+    public function get_by(array $where)
     {
-        $filteredData = array_intersect_key($data, array_flip($this->columns));
+        $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE ' . $this->whereStatement($where));
+        $query->execute($where);
+    }
+
+    public function insert(array $data)
+    {
+        $filteredData = array_intersect_key($data, array_flip($this->columns)); // Shouldn't this be a check?
         unset($filteredData['id']); // Ensure ID is never included
 
         // Build columns and placeholders dynamically
@@ -48,7 +80,7 @@ abstract class Repository
     }
 
 
-    public function update($data)
+    public function update(array $data)
     {
         if (!isset($data['id'])) {
             throw new InvalidArgumentException("Missing 'id' for update.");
@@ -67,7 +99,7 @@ abstract class Repository
         $query = $this->db->prepare($sql);
 
         // Add 'id' back for binding
-        $filteredData['id'] = $data['id'];
+$filteredData[  'id'] = $data['id'];
 
         // Debugging: Log SQL and data
         error_log("SQL Query: " . $sql);

@@ -1,7 +1,8 @@
 <?php
-require_once __DIR__ . '/Repository.php';
-require_once __DIR__ . '/../services/auth.php';
-require_once __DIR__ . '/../services/db_helper.php';
+namespace CryptoTrade\DataAccess;
+use CryptoTrade\Models\User;
+use CryptoTrade\Services\Auth;
+use InvalidArgumentException;
 
 class UserRepository extends Repository {
     
@@ -9,7 +10,7 @@ class UserRepository extends Repository {
     {
         parent::__construct();
         $this->table = 'users'; // Updated to match crypto_db schema
-        $this->columns = ['id', 'email', 'password_hash', 'role', 'balance', 'two_factor_enabled', 'created_at'];
+        $this->columns = User::getFieldNames(); // ['id', 'email', 'password_hash', 'role', 'balance', 'two_factor_enabled', 'created_at'];
     }
 
     // Get user by email
@@ -88,16 +89,16 @@ class UserRepository extends Repository {
     }
 
     // Delete user
-    public function delete($id)
-    {
-        return parent::delete($id);
-    }
+//    public function delete($id)
+//    {
+//        return parent::delete($id);
+//    }
 
     // Get all users
-    public function get_all()
-    {
-        return parent::get_all();
-    }
+//    public function get_all(): array
+//    {
+//        return parent::get_all();
+//    }
 
     // Get user balance
     public function get_balance($user_id)
