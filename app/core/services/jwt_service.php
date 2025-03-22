@@ -1,6 +1,8 @@
 <?php
+namespace CryptoTrade\Services;
 require_once __DIR__ . '/../../vendor/autoload.php'; // Use Composer's autoloader
 
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Dotenv\Dotenv;
@@ -73,7 +75,8 @@ class JWTService {
     }
 
     // Get user data from token (utility function)
-    public static function getUserFromToken($token) {
+    public static function getUserFromToken($token): array
+    {
         self::init(); // Ensure env variables are loaded
         try {
             // Ensure algorithm is valid

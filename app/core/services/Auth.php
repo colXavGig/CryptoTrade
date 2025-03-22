@@ -1,12 +1,15 @@
 <?php
-require_once __DIR__ . '/db_helper.php';
-require_once __DIR__ . '/jwt_service.php';
+namespace CryptoTrade\Services;
+use App\Services\Database;
+use CryptoTrade\Services\JWTService;
+use PDO;
+
 
 class Auth {
     private PDO $db;
 
     public function __construct(PDO $db) {
-        $this->db = $db;
+        $this->db = Database::getConnection();
     }
 
     public function login(string $email, string $password): ?string {

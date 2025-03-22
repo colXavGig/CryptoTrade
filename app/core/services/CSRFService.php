@@ -1,5 +1,5 @@
 <?php
-
+namespace CryptoTrade\Services;
 class CSRFService {
     // Generate and store CSRF token in session
     public static function generateToken(): string {

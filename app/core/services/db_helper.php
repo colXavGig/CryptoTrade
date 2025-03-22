@@ -1,9 +1,10 @@
 <?php
-
+namespace App\Services;
 // Use environment variables to store sensitive information
 require_once __DIR__ . '/../../vendor/autoload.php'; // Load Composer dependencies
 
 use Dotenv\Dotenv;
+use PDO;
 
 class Database {
     private static ?PDO $connection = null;
