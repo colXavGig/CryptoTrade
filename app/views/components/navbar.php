@@ -5,7 +5,7 @@
 
     <?php 
     if (isset($_SESSION['jwt'])) :
-        require_once __DIR__ . '/../../core/services/jwt_service.php';
+        require_once __DIR__ . '/../../core/services/JwtService.php';
 
         $user = JWTService::getUserFromToken($_SESSION['jwt']);
     ?>
