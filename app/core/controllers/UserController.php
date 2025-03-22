@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../data_access/UserRepository.php';
 require_once __DIR__ . '/../services/auth.php';
-require_once __DIR__ . '/../services/jwt_service.php';
+require_once __DIR__ . '/../services/JWTService.php';
 
 class UserController {
 
