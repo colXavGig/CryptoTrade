@@ -1,5 +1,7 @@
 <?php
 
+use CryptoTrade\Services\EmailTokenService;
+
 require_once __DIR__ . '/../data_access/UserRepository.php';
 require_once __DIR__ . '/../services/auth.php';
 require_once __DIR__ . '/../services/JWTService.php';
@@ -80,8 +82,12 @@ class UserController {
                     'password_hash' => password_hash($_POST['password'], PASSWORD_DEFAULT),
                     'role' => $_POST['role'] ?? 'user',
                     'balance' => 0.00,
-                    'two_factor_enabled' => $_POST['two_factor_enabled'] ?? true
+                    'two_factor_enabled' => $_POST['two_factor_enabled'] ?? false
                 ];
+
+                // Generate token for email confirmation
+                $token = EmailTokenService::generateToken($data['email'], \CryptoTrade\Models\EmailTokenType::EMAIL_CONFIRMATION);
+                EmailTokenService::sendToken($data['email'], $token, \CryptoTrade\Models\EmailTokenType::EMAIL_CONFIRMATION);
 
                 $userId = $this->userRepository->register($data);
                 echo json_encode(['success' => true, 'user_id' => $userId]);
@@ -91,7 +97,28 @@ class UserController {
             }
         }
 
-        echo "<script>window.location.href = '/';</script>";
+        echo "<script>window.location.href = '/email-verification';</script>";
+    }
+
+    /**
+     * Verify email token
+     */
+    public function confirmEmail()
+    {
+        // call updateTwoFactorAuthentication from EmailTokenService
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                if (empty($_POST['token'])) {
+                    throw new Exception("Token is required.");
+                }
+                $token = trim($_POST['token']);
+                EmailTokenService::confirmEmail($token);
+
+            } catch (Exception $e) {
+                echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            }
+            echo json_encode(['success' => true, 'message' => "Email confirmed successfully"]);
+        }
     }
 
     /**
@@ -243,5 +270,41 @@ class UserController {
             }
         }
     }
+
+    /**
+     * Reset password (calling EmailTokenService)
+     */
+    public function resetPassword()
+    {
+        $this->checkAuthenticated();
+        // generate token for password reset
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                if (empty($_POST['email'])) {
+                    throw new Exception("Email is required.");
+                }
+
+                $email = trim($_POST['email']);
+                $user = $this->userRepository->get_by_email($email);
+
+                if (!$user) {
+                    throw new Exception("User not found.");
+                }
+
+                // TODO: Check if email service works before sending token and changing password
+
+
+                $token = EmailTokenService::generateToken($user['id'], \CryptoTrade\Models\EmailTokenType::PASSWORD_RESET);
+                EmailTokenService::sendToken($email, $token, \CryptoTrade\Models\EmailTokenType::PASSWORD_RESET);
+                EmailTokenService::resetPassword($token);
+
+                echo json_encode(['success' => true, 'message' => "Password reset token sent to email."]);
+            } catch (Exception $e) {
+                echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            }
+        }
+
+    }
 }
+
 ?>
