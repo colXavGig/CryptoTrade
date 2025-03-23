@@ -34,7 +34,7 @@ class UserRepository extends Repository {
     }
 
     // User login
-    public function login($email, $password)
+    public function login($email, $password): ?string
     {
         if (!$this->is_valid_email($email)) {
             throw new InvalidArgumentException("Invalid email format.");
@@ -45,7 +45,7 @@ class UserRepository extends Repository {
     }
 
     // Register a new user
-    public function register($data)
+    public function register($data): bool|string
     {
         if (!$this->is_valid_email($data['email'])) {
             throw new InvalidArgumentException("Invalid email format.");
@@ -71,7 +71,7 @@ class UserRepository extends Repository {
     }
 
     // Update user details
-    public function update($data)
+    public function update($data): bool
     {
         if (!isset($data['id'])) {
             throw new InvalidArgumentException("Missing 'id' for update.");
@@ -109,26 +109,26 @@ class UserRepository extends Repository {
     }
 
     // Update user balance
-    public function update_balance($user_id, $new_balance)
+    public function update_balance($user_id, $new_balance): bool
     {
         $query = $this->db->prepare('UPDATE ' . $this->table . ' SET balance = :balance WHERE id = :user_id');
         return $query->execute(['balance' => $new_balance, 'user_id' => $user_id]);
     }
 
     // Enable/Disable Two-Factor Authentication
-    public function set_two_factor($user_id, $enabled)
+    public function set_two_factor($user_id, $enabled): bool
     {
         $query = $this->db->prepare('UPDATE ' . $this->table . ' SET two_factor_enabled = :enabled WHERE id = :user_id');
         return $query->execute(['enabled' => $enabled, 'user_id' => $user_id]);
     }
 
     // Custom validation functions
-    private function is_valid_email($email)
+    private function is_valid_email($email): bool
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
-    private function is_valid_password($password)
+    private function is_valid_password($password): bool
     {
         return strlen($password) >= 8;
     }

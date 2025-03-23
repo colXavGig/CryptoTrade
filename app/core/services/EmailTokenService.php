@@ -2,18 +2,27 @@
 
 namespace CryptoTrade\Services;
 
+use Random\RandomException;
+
 class EmailTokenService
 {
     // Generate and store email token
+    /**
+     * @throws RandomException
+     */
     public static function generateToken($user_id, $type): string
     {
         // 6 digit token
-        $token = random_int(100000, 999999);
+        try {
+            $token = random_int(100000, 999999);
+        } catch (RandomException $e) {
+            throw new RandomException("Failed to generate random token.");
+        }
         $expires_at = new \DateTime('+30 minutes'); // Token expires in 30 minutes
 
         $email_token = new \CryptoTrade\Models\EmailToken($user_id, $token, $type, $expires_at);
         $email_token_repo = new \CryptoTrade\DataAccess\EmailTokenRepository();
-        $email_token_repo->insert($email_token);
+        $email_token_repo->insert($email_token.toArray());
 
         return $token;
     }
@@ -40,14 +49,14 @@ class EmailTokenService
     }
 
     // Delete email token
-    private static function deleteToken($token)
+    private static function deleteToken($token) : void
     {
         $email_token_repo = new \CryptoTrade\DataAccess\EmailTokenRepository();
         $email_token_repo->delete_by_token($token);
     }
 
     // Send email token
-    public static function sendToken($email, $token, $type)
+    public static function sendToken($email, $token, $type) : void
     {
         $subject = '';
         $message = '';
@@ -67,7 +76,7 @@ class EmailTokenService
     // TODO: implement user endpoints to call the following functions
 
     // Process email confirmation
-    public static function confirmEmail($token)
+    public static function confirmEmail($token) : void
     {
         if (!self::verifyToken($token, \CryptoTrade\Models\EmailTokenType::EMAIL_CONFIRMATION))
         {
@@ -95,7 +104,7 @@ class EmailTokenService
 
 
     // Reset password
-    public static function resetPassword($token)
+    public static function resetPassword($token) : void
     {
         if (!self::verifyToken($token, \CryptoTrade\Models\EmailTokenType::PASSWORD_RESET))
         {
@@ -118,7 +127,7 @@ class EmailTokenService
     }
 
     // Resend email token
-    public static function resendVerificationToken($email, $type)
+    public static function resendVerificationToken($email, $type) : void
     {
         $user_repo = new \CryptoTrade\DataAccess\UserRepository();
         $user = $user_repo->get_by_email($email);

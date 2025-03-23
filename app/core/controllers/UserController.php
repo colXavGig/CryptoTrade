@@ -1,7 +1,11 @@
 <?php
 
+use CryptoTrade\DataAccess\UserRepository;
 use CryptoTrade\Models\EmailTokenType;
+use CryptoTrade\Services\CSRFService;
 use CryptoTrade\Services\EmailTokenService;
+use CryptoTrade\Services\JWTService;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once __DIR__ . '/../data_access/UserRepository.php';
 require_once __DIR__ . '/../services/auth.php';
@@ -9,7 +13,7 @@ require_once __DIR__ . '/../services/JWTService.php';
 
 class UserController {
 
-    private $userRepository;
+    private UserRepository $userRepository;
 
     public function __construct()
     {
@@ -38,7 +42,7 @@ class UserController {
     /**
      * Ensure user is an admin
      */
-    private function checkAdmin()
+    private function checkAdmin(): void
     {
         $user = $this->checkAuthenticated();
         if ($user['role'] !== 'admin') {
@@ -51,7 +55,7 @@ class UserController {
     /**
      * Get all users (Admin only)
      */
-    public function getAll()
+    public function getAll(): void
     {
         $this->checkAdmin(); // Only admin can access
 
@@ -66,7 +70,7 @@ class UserController {
     /**
      * Register user
      */
-    public function register()
+    public function register(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
@@ -104,7 +108,7 @@ class UserController {
     /**
      * Verify email token
      */
-    public function confirmEmail()
+    public function confirmEmail(): void
     {
         // call updateTwoFactorAuthentication from EmailTokenService
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -125,7 +129,7 @@ class UserController {
     /**
      * Login user
      */
-    public function login()
+    public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
@@ -161,7 +165,7 @@ class UserController {
     /**
      * Logout user
      */
-    public function logout()
+    #[NoReturn] public function logout() : void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -179,7 +183,7 @@ class UserController {
     /**
      * Get user by email (Authenticated users only)
      */
-    public function getUserByEmail()
+    public function getUserByEmail() : void
     {
         $this->checkAuthenticated();
 
@@ -202,7 +206,7 @@ class UserController {
     /**
      * Verify JWT and return user info
      */
-    public function verify()
+    public function verify() : void
     {
         try {
             $decoded = JWTService::verifyJWT();
@@ -223,7 +227,7 @@ class UserController {
     /**
      * Update user (Authenticated users only)
      */
-    public function update()
+    public function update() : void
     {
         $this->checkAuthenticated();
 
@@ -253,7 +257,7 @@ class UserController {
     /**
      * Delete user (Admin only)
      */
-    public function delete()
+    public function delete() : void
     {
         $this->checkAdmin(); // Only admin can delete users
 
@@ -275,7 +279,7 @@ class UserController {
     /**
      * Reset password (calling EmailTokenService)
      */
-    public function resetPassword()
+    public function resetPassword() : void
     {
         // generate token for password reset
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -309,7 +313,7 @@ class UserController {
     /**
      * Resend email token (for email validation only.)
      */
-    public function resendVerificationEmail()
+    public function resendVerificationEmail() : void
     {
         $this->checkAuthenticated();
 

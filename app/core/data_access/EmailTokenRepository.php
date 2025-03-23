@@ -28,21 +28,21 @@ class EmailTokenRepository extends Repository
     }
 
     // Delete email token by token
-    public function delete_by_token($token)
+    public function delete_by_token($token): void
     {
         $query = $this->db->prepare('DELETE FROM ' . $this->table . ' WHERE token = :token');
         $query->execute(['token' => $token]);
     }
 
     // Delete email token by user ID
-    public function delete_by_user_id($user_id)
+    public function delete_by_user_id($user_id): void
     {
         $query = $this->db->prepare('DELETE FROM ' . $this->table . ' WHERE user_id = :user_id');
         $query->execute(['user_id' => $user_id]);
     }
 
     // Delete expired email tokens
-    public function delete_expired_tokens()
+    public function delete_expired_tokens(): void
     {
         $query = $this->db->prepare('DELETE FROM ' . $this->table . ' WHERE expires_at < NOW()');
         $query->execute();
