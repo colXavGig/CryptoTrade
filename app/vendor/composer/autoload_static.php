@@ -22,6 +22,7 @@ class ComposerStaticInitc25032fb45bcc4b2bfd38640d3bb1aa5
         'P' => 
         array (
             'PhpOption\\' => 10,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'G' => 
         array (
@@ -34,6 +35,10 @@ class ComposerStaticInitc25032fb45bcc4b2bfd38640d3bb1aa5
         'D' => 
         array (
             'Dotenv\\' => 7,
+        ),
+        'C' => 
+        array (
+            'CryptoTrade\\' => 12,
         ),
     );
 
@@ -54,6 +59,10 @@ class ComposerStaticInitc25032fb45bcc4b2bfd38640d3bb1aa5
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
         'GrahamCampbell\\ResultType\\' => 
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
@@ -65,6 +74,10 @@ class ComposerStaticInitc25032fb45bcc4b2bfd38640d3bb1aa5
         'Dotenv\\' => 
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
+        ),
+        'CryptoTrade\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/core',
         ),
     );
 

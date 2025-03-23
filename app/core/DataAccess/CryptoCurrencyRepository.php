@@ -1,10 +1,11 @@
 <?php
+
 namespace CryptoTrade\DataAccess;
 
-use CryptoTrade\DataAccess\Repository;
 use CryptoTrade\Models\CryptoCurrency;
 
-class CryptoCurrencyRepository extends Repository {
+class CryptoCurrencyRepository extends Repository
+{
     protected function __construct()
     {
         parent::__construct();
@@ -12,26 +13,32 @@ class CryptoCurrencyRepository extends Repository {
         $this->columns = CryptoCurrency::getFieldNames();
     }
 
-    public  function getAllCryptoCurrencies() : array {
+    public function getAllCryptoCurrencies(): array
+    {
         $list = parent::get_all();
-         for ($i = 0; $i < count($list); $i++) {
+        for ($i = 0; $i < count($list); $i++) {
             $list[$i] = CryptoCurrency::fromArray($list[$i]);
-         }
-         return $list;
+        }
+        return $list;
     }
-    public function getCryptoCurrencyById($id): CryptoCurrency {
+
+    public function getCryptoCurrencyById($id): CryptoCurrency
+    {
         return CryptoCurrency::fromArray(parent::get_by_id($id));
     }
 
-    public  function createCryptoCurrency(CryptoCurrency $cryptoCurrency) {
+    public function createCryptoCurrency(CryptoCurrency $cryptoCurrency)
+    {
         parent::insert($cryptoCurrency->toArray());
     }
 
-    public  function updateCryptoCurrency(CryptoCurrency $cryptoCurrency) {
+    public function updateCryptoCurrency(CryptoCurrency $cryptoCurrency)
+    {
         parent::update($cryptoCurrency->toArray());
     }
 
-    public  function deleteCryptoCurrency(CryptoCurrency $cryptoCurrency) {
+    public function deleteCryptoCurrency(CryptoCurrency $cryptoCurrency)
+    {
         parent::delete($cryptoCurrency->id);
     }
 }

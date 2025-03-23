@@ -17,27 +17,35 @@ class TransactionRepository extends Repository
     /**
      * @throws DateMalformedStringException
      */
-    public function getTransactionById($id): Transaction {
+    public function getTransactionById($id): Transaction
+    {
         return Transaction::fromArray(parent::get_by_id($id));
     }
 
     /**
      * @throws DateMalformedStringException
      */
-    public function getAllTransactions() : array {
+    public function getAllTransactions(): array
+    {
         $list = parent::get_all();
         for ($i = 0; $i < count($list); $i++) {
             $list[$i] = Transaction::fromArray($list[$i]);
         }
         return $list;
     }
-    public function createTransaction(Transaction $transaction) {
+
+    public function createTransaction(Transaction $transaction)
+    {
         parent::insert($transaction->toArray());
     }
-    public function updateTransaction(Transaction $transaction) {
+
+    public function updateTransaction(Transaction $transaction)
+    {
         parent::update($transaction->toArray());
     }
-    public function deleteTransaction(Transaction $transaction) {
+
+    public function deleteTransaction(Transaction $transaction)
+    {
         parent::delete($transaction->id);
     }
 }

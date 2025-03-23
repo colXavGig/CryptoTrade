@@ -1,27 +1,29 @@
 <?php
-/* this page is not used in development environment */
+use CryptoTrade\Services\MailService;
+use CryptoTrade\Services\JWTService;
 
-// if session is not started, start the session
+
+// If session not started
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-
-// Initialize user variables
+// User info defaults
 $user_name = '';
 $user_email = '';
 
-// Check if the user is logged in
+// Check session JWT
 if (isset($_SESSION['jwt'])) {
     $user = JWTService::getUserFromToken($_SESSION['jwt']);
     if ($user) {
-        $user_name = $user['email']; // Use email as name
+        $user_name = $user['email'];
         $user_email = $user['email'];
     }
 }
 
+// Handle form submit
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate and sanitize inputs
     $name = htmlspecialchars(trim($_POST['name']));
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
     $message = htmlspecialchars(trim($_POST['message']));
@@ -29,22 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$email) {
         echo 'Invalid email format!';
     } else {
-        // Prepare email headers to prevent injection attacks
         $to = 'a3emond@gmail.com';
         $subject = 'Contact Form Submission';
-        $headers = "From: $email\r\n";
-        $headers .= "Reply-To: $email\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-        // Email content
         $body = "Name: $name\nEmail: $email\nMessage:\n$message";
 
-        // Send email and confirm
-        if (mail($to, $subject, $body, $headers)) {
-            echo 'Thank you for your message!';
-        } else {
-            echo 'Error: Unable to send message. Try again later.';
-        }
+        // Send via MailService
+        $mailer = new MailService();
+        $sent = $mailer->send($to, $subject, $body);
+
+        echo $sent ? 'Thank you for your message!' : 'Error: Unable to send message. Try again later.';
     }
 }
 ?>
@@ -81,14 +76,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <form method="post">
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-    <label for="name">Name:</label><br>
-    <input type="text" name="name" id="name" required value="<?= $user_name ?>">
-    <br>
-    <label for="email">Email:</label><br>
-    <input type="email" name="email" id="email" required value="<?= $user_email ?>">
-    <br>
-    <label for="message">Message:</label><br>
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" required value="<?= htmlspecialchars($user_name) ?>">
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email" required value="<?= htmlspecialchars($user_email) ?>">
+
+    <label for="message">Message:</label>
     <textarea name="message" id="message" required></textarea>
-    <br>
+
     <input type="submit" value="Send">
 </form>

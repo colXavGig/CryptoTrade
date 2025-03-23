@@ -1,8 +1,9 @@
 <?php
+
 namespace CryptoTrade\DataAccess;
-use App\Services\Database;
+
+use CryptoTrade\Services\Database;
 use InvalidArgumentException;
-use PDO;
 
 require_once __DIR__ . '/Repository.php';
 require_once __DIR__ . '/../services/auth.php';
@@ -19,24 +20,14 @@ abstract class Repository
         $this->db = Database::getConnection();
     }
 
-    public static function getInstance() : self {
+    public static function getInstance(): self
+    {
         if (!isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
     }
 
-
-    protected function whereStatement($where) : string
-    {
-        $whereStatement = 'WHERE ';
-        foreach ($where as $key => $value) {
-            assert(is_string($key));
-            assert(in_array($key, $this->columns));
-            $whereStatement .= $key . ' = ' . $value . ' AND ';
-        }
-        return substr($whereStatement, 0, - strlen(' AND '));
-    }
     public function get_all(): array
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table);
@@ -55,6 +46,17 @@ abstract class Repository
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE ' . $this->whereStatement($where));
         $query->execute($where);
+    }
+
+    protected function whereStatement($where): string
+    {
+        $whereStatement = 'WHERE ';
+        foreach ($where as $key => $value) {
+            assert(is_string($key));
+            assert(in_array($key, $this->columns));
+            $whereStatement .= $key . ' = ' . $value . ' AND ';
+        }
+        return substr($whereStatement, 0, -strlen(' AND '));
     }
 
     public function insert(array $data)
@@ -99,7 +101,7 @@ abstract class Repository
         $query = $this->db->prepare($sql);
 
         // Add 'id' back for binding
-$filteredData[  'id'] = $data['id'];
+        $filteredData['id'] = $data['id'];
 
         // Debugging: Log SQL and data
         error_log("SQL Query: " . $sql);

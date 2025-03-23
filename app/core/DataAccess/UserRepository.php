@@ -1,11 +1,13 @@
 <?php
 namespace CryptoTrade\DataAccess;
+
 use CryptoTrade\Models\User;
 use CryptoTrade\Services\Auth;
 use InvalidArgumentException;
 
-class UserRepository extends Repository {
-    
+class UserRepository extends Repository
+{
+
     public function __construct()
     {
         parent::__construct();
@@ -26,6 +28,14 @@ class UserRepository extends Repository {
     }
 
     // Get user by ID
+
+    private function is_valid_email($email): bool
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    // User login
+
     public function get_by_id($id)
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE id = :id');
@@ -33,7 +43,8 @@ class UserRepository extends Repository {
         return $query->fetch();
     }
 
-    // User login
+    // Register a new user
+
     public function login($email, $password): ?string
     {
         if (!$this->is_valid_email($email)) {
@@ -44,7 +55,8 @@ class UserRepository extends Repository {
         return $auth->login($email, $password);
     }
 
-    // Register a new user
+    // Update user details
+
     public function register($data): bool|string
     {
         if (!$this->is_valid_email($data['email'])) {
@@ -57,7 +69,7 @@ class UserRepository extends Repository {
 
         // Hash the password before inserting
         $data['password_hash'] = password_hash($data['password_hash'], PASSWORD_DEFAULT);
-        
+
         // Ensure role is valid
         if (!isset($data['role']) || !in_array($data['role'], ['admin', 'user'])) {
             $data['role'] = 'user'; // Default role
@@ -70,7 +82,27 @@ class UserRepository extends Repository {
         return parent::insert($data);
     }
 
-    // Update user details
+    // Delete user
+//    public function delete($id)
+//    {
+//        return parent::delete($id);
+//    }
+
+    // Get all users
+//    public function get_all(): array
+//    {
+//        return parent::get_all();
+//    }
+
+    // Get user balance
+
+    private function is_valid_password($password): bool
+    {
+        return strlen($password) >= 8;
+    }
+
+    // Update user balance
+
     public function update($data): bool
     {
         if (!isset($data['id'])) {
@@ -88,19 +120,8 @@ class UserRepository extends Repository {
         return parent::update($data);
     }
 
-    // Delete user
-//    public function delete($id)
-//    {
-//        return parent::delete($id);
-//    }
+    // Enable/Disable Two-Factor Authentication
 
-    // Get all users
-//    public function get_all(): array
-//    {
-//        return parent::get_all();
-//    }
-
-    // Get user balance
     public function get_balance($user_id)
     {
         $query = $this->db->prepare('SELECT balance FROM ' . $this->table . ' WHERE id = :user_id');
@@ -108,29 +129,19 @@ class UserRepository extends Repository {
         return $query->fetchColumn();
     }
 
-    // Update user balance
+    // Custom validation functions
+
     public function update_balance($user_id, $new_balance): bool
     {
         $query = $this->db->prepare('UPDATE ' . $this->table . ' SET balance = :balance WHERE id = :user_id');
         return $query->execute(['balance' => $new_balance, 'user_id' => $user_id]);
     }
 
-    // Enable/Disable Two-Factor Authentication
     public function set_two_factor($user_id, $enabled): bool
     {
         $query = $this->db->prepare('UPDATE ' . $this->table . ' SET two_factor_enabled = :enabled WHERE id = :user_id');
         return $query->execute(['enabled' => $enabled, 'user_id' => $user_id]);
     }
-
-    // Custom validation functions
-    private function is_valid_email($email): bool
-    {
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
-    }
-
-    private function is_valid_password($password): bool
-    {
-        return strlen($password) >= 8;
-    }
 }
+
 ?>

@@ -1,4 +1,6 @@
 <?php
+
+
 return [
     // Public Routes (No Authentication Required)
     'home' => 'views/pages/home.php',
@@ -7,26 +9,27 @@ return [
     'login' => 'views/pages/login.php',
     'register' => 'views/pages/register.php',
     'profile' => 'views/pages/profile.php',
-    'email-verification' => 'views/pages/email-verification.php', // Email verification page (after registration) with form to enter token
+    'email-verification' => 'views/pages/email-verification.php',
     '404' => 'views/pages/404.php',
 
-    // -------------------------------------------USER ROUTES-------------------------------------------
-    // Public API Routes (No JWT Required)
-    'api/user/register' => 'core/controllers/UserController.php@register',
-    'api/user/login' => 'core/controllers/UserController.php@login',
-    'api/user/logout' => 'core/controllers/UserController.php@logout',
-    'api/user/verify-email' => 'core/controllers/UserController.php@verifyEmail', // used for email verification with email token
-    'api/user/reset-password' => 'core/controllers/UserController.php@resetPassword',
-    'api/user/resend-verification-email' => 'core/controllers/UserController.php@resendVerificationEmail',
-    // Protected API Routes (JWT Required)
-    'api/user/verify' => 'core/controllers/UserController.php@verify', // Authenticated users
-    'api/user/getByEmail' => 'core/controllers/UserController.php@getUserByEmail', // Authenticated users
-    'api/user/update' => 'core/controllers/UserController.php@update', // Authenticated users
-    // Admin-Only Routes (JWT & Admin Role Required)
-    'api/user/getAll' => 'core/controllers/UserController.php@getAll',
-    'api/user/delete' => 'core/controllers/UserController.php@delete',
+    // ---------------------------- USER API ROUTES (PSR-4 autoloaded) ----------------------------
 
-    
+    // Public API Routes (No JWT Required)
+    'api/user/register' => 'CryptoTrade\Controllers\UserController@register',
+    'api/user/login' => 'CryptoTrade\Controllers\UserController@login',
+    'api/user/logout' => 'CryptoTrade\Controllers\UserController@logout',
+    'api/user/verify-email' => 'CryptoTrade\Controllers\UserController@verifyEmail',
+    'api/user/reset-password' => 'CryptoTrade\Controllers\UserController@resetPassword',
+    'api/user/resend-verification-email' => 'CryptoTrade\Controllers\UserController@resendVerificationEmail',
+
+    // Protected API Routes (JWT Required)
+    'api/user/verify' => 'CryptoTrade\Controllers\UserController@verify',
+    'api/user/getByEmail' => 'CryptoTrade\Controllers\UserController@getUserByEmail',
+    'api/user/update' => 'CryptoTrade\Controllers\UserController@update',
+
+    // Admin-Only Routes (JWT + Admin Role Required)
+    'api/user/getAll' => 'CryptoTrade\Controllers\UserController@getAll',
+    'api/user/delete' => 'CryptoTrade\Controllers\UserController@delete',
 ];
 
 ?>

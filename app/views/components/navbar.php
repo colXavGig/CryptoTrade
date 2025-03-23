@@ -3,9 +3,11 @@
     <li><a href="about" class="spa-link">About</a></li>
     <li><a href="contact" class="spa-link">Contact</a></li>
 
-    <?php 
+    <?php
+
+    use CryptoTrade\Services\JWTService;
+
     if (isset($_SESSION['jwt'])) :
-        require_once __DIR__ . '/../../core/services/JwtService.php';
 
         $user = JWTService::getUserFromToken($_SESSION['jwt']);
     ?>
