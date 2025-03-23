@@ -1,18 +1,20 @@
 <?php
 namespace CryptoTrade\Services;
-use App\Services\Database;
-use CryptoTrade\Services\JWTService;
+
 use PDO;
 
 
-class Auth {
+class Auth
+{
     private PDO $db;
 
-    public function __construct(PDO $db) {
+    public function __construct(PDO $db)
+    {
         $this->db = Database::getConnection();
     }
 
-    public function login(string $email, string $password): ?string {
+    public function login(string $email, string $password): ?string
+    {
         $stmt = $this->db->prepare("SELECT id, email, password_hash, role, balance, two_factor_enabled FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -41,4 +43,5 @@ class Auth {
         return null; // Invalid credentials
     }
 }
+
 ?>

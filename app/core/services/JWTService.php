@@ -2,32 +2,21 @@
 namespace CryptoTrade\Services;
 require_once __DIR__ . '/../../vendor/autoload.php'; // Use Composer's autoloader
 
+use Dotenv\Dotenv;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Dotenv\Dotenv;
 
-class JWTService {
+class JWTService
+{
     private static $secret_key;
     private static $algorithm;
     private static $expire_time;
 
     // Load environment variables
-    public static function init() {
-        if (!self::$secret_key) {
-            // Load environment variables
-            $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
-            $dotenv->load();
 
-            // Assign values from .env and set defaults
-            self::$secret_key = $_ENV['JWT_SECRET'] ?? 'default_secret';
-            self::$algorithm = $_ENV['JWT_ALGORITHM'] ?? 'HS256';
-            self::$expire_time = $_ENV['JWT_EXPIRES_TIME'] ?? 3600;
-        }
-    }
-
-    // Generate JWT Token
-    public static function generateToken($user) {
+    public static function generateToken($user)
+    {
         self::init(); // Ensure env variables are loaded
 
         $payload = [
@@ -43,8 +32,26 @@ class JWTService {
         return JWT::encode($payload, self::$secret_key, self::$algorithm);
     }
 
+    // Generate JWT Token
+
+    public static function init()
+    {
+        if (!self::$secret_key) {
+            // Load environment variables
+            $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+            $dotenv->load();
+
+            // Assign values from .env and set defaults
+            self::$secret_key = $_ENV['JWT_SECRET'] ?? 'default_secret';
+            self::$algorithm = $_ENV['JWT_ALGORITHM'] ?? 'HS256';
+            self::$expire_time = $_ENV['JWT_EXPIRES_TIME'] ?? 3600;
+        }
+    }
+
     // Verify JWT Token and return user data
-    public static function verifyJWT() {
+
+    public static function verifyJWT()
+    {
         self::init();
         $headers = getallheaders();
 
@@ -87,10 +94,11 @@ class JWTService {
             // Decode the token
             $decoded = JWT::decode($token, new Key(self::$secret_key, self::$algorithm));
 
-            return (array) $decoded; // Convert object to array
+            return (array)$decoded; // Convert object to array
         } catch (Exception $e) {
             return ["error" => $e->getMessage()]; // Return error
         }
     }
 }
+
 ?>

@@ -2,15 +2,17 @@
 
 namespace CryptoTrade\Models;
 
+use DateTime;
+
 class EmailToken implements RepoCompatibility
 {
     // define email token for two-factor authentication
     private string $user_id;
     private int $token;
     private EmailTokenType $type;
-    private \DateTime $expires_at;
+    private DateTime $expires_at;
 
-    public function __construct(string $user_id, int $token, EmailTokenType $type, \DateTime $expires_at)
+    public function __construct(string $user_id, int $token, EmailTokenType $type, DateTime $expires_at)
     {
         $this->user_id = $user_id;
         $this->token = $token;
@@ -39,7 +41,8 @@ class EmailToken implements RepoCompatibility
     }
 }
 
-enum EmailTokenType {
+enum EmailTokenType
+{
     case EMAIL_CONFIRMATION;
     case PASSWORD_RESET;
 }

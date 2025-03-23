@@ -6,13 +6,6 @@ use DateTime;
 
 class Payment implements RepoCompatibility
 {
-    public int $id;
-    public int $user_id;
-    public string $stripe_transaction_id;
-    public float $amount;
-    public string $status;
-    public DateTime $created_at;
-
     private const FIELD_NAMES = [
         "id",
         "user_id",
@@ -21,6 +14,12 @@ class Payment implements RepoCompatibility
         "status",
         "created_at",
     ];
+    public int $id;
+    public int $user_id;
+    public string $stripe_transaction_id;
+    public float $amount;
+    public string $status;
+    public DateTime $created_at;
 
     public function __construct(int $id, int $user_id, string $stripe_transaction_id, float $amount, string $status, DateTime $created_at)
     {
@@ -52,6 +51,7 @@ class Payment implements RepoCompatibility
     {
         return self::FIELD_NAMES;
     }
+
     function toArray(): array
     {
         $list = [];

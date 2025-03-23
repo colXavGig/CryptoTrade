@@ -2,14 +2,8 @@
 
 namespace CryptoTrade\Models;
 
-class Alert implements  RepoCompatibility
+class Alert implements RepoCompatibility
 {
-    public int $id;
-    public int $user_id;
-    public int $crypto_id;
-    public float $price_threshold;
-    public bool $notified;
-
     private const FIELD_NAMES = [
         "id",
         "user_id",
@@ -18,6 +12,11 @@ class Alert implements  RepoCompatibility
         "alert_type",
         "notified",
     ];
+    public int $id;
+    public int $user_id;
+    public int $crypto_id;
+    public float $price_threshold;
+    public bool $notified;
 
     public function __construct(int $id, int $user_id, int $crypto_id, float $price_threshold, string $type, bool $notified)
     {
@@ -28,7 +27,9 @@ class Alert implements  RepoCompatibility
         $this->type = $type;
         $this->notified = $notified;
     }
-    public static function fromArray($array): Alert {
+
+    public static function fromArray($array): Alert
+    {
         assert(is_array($array));
         assert(array_key_exists('id', $array));
         assert(array_key_exists('user_id', $array));
@@ -46,7 +47,14 @@ class Alert implements  RepoCompatibility
             $array['notified']
         );
     }
-    public function toArray(): array {
+
+    static function getFieldNames(): array
+    {
+        return self::FIELD_NAMES;
+    }
+
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
@@ -55,10 +63,5 @@ class Alert implements  RepoCompatibility
             'alert_type' => $this->type,
             'notified' => $this->notified
         ];
-    }
-
-    static function getFieldNames(): array
-    {
-        return self::FIELD_NAMES;
     }
 }

@@ -2,18 +2,10 @@
 
 namespace CryptoTrade\Models;
 
-use CryptoTrade\Models\RepoCompatibility;
 use DateTime;
 
 class Log implements RepoCompatibility
 {
-    public int $id;
-    public int $user_id;
-    public string $action;
-    public string $ip_address;
-    public string $user_agent;
-    public DateTime $created_at;
-
     private const FIELD_NAMES = [
         "id",
         "user_id",
@@ -22,6 +14,12 @@ class Log implements RepoCompatibility
         "user_agent",
         "created_at",
     ];
+    public int $id;
+    public int $user_id;
+    public string $action;
+    public string $ip_address;
+    public string $user_agent;
+    public DateTime $created_at;
 
     public function __construct(int $id, int $user_id, string $action, string $ip_adress, string $user_agent, DateTime $created_at)
     {
@@ -32,6 +30,7 @@ class Log implements RepoCompatibility
         $this->user_agent = $user_agent;
         $this->created_at = $created_at;
     }
+
     static function fromArray(array $array): Log
     {
         assert(is_array($array));
