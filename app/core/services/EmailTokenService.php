@@ -117,4 +117,25 @@ class EmailTokenService
         self::deleteToken($token);
     }
 
+    // Resend email token
+    public static function resendVerificationToken($email, $type)
+    {
+        $user_repo = new \CryptoTrade\DataAccess\UserRepository();
+        $user = $user_repo->get_by_email($email);
+
+        if (!$user) {
+            throw new \InvalidArgumentException("User not found.");
+        }
+
+        // find the existing token and delete it
+        $email_token_repo = new \CryptoTrade\DataAccess\EmailTokenRepository();
+        $email_token = $email_token_repo->get_by_user_id($user['id']);
+        if ($email_token) {
+            $email_token_repo->delete_by_user_id($user['id']);
+        }
+        // generate and send new token
+        $token = self::generateToken($user['id'], $type);
+        self::sendToken($email, $token, $type);
+    }
+
 }

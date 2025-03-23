@@ -16,11 +16,12 @@ return [
     'api/user/login' => 'core/controllers/UserController.php@login',
     'api/user/logout' => 'core/controllers/UserController.php@logout',
     'api/user/verify-email' => 'core/controllers/UserController.php@verifyEmail', // used for email verification with email token
+    'api/user/reset-password' => 'core/controllers/UserController.php@resetPassword',
+    'api/user/resend-verification-email' => 'core/controllers/UserController.php@resendVerificationEmail',
     // Protected API Routes (JWT Required)
     'api/user/verify' => 'core/controllers/UserController.php@verify', // Authenticated users
     'api/user/getByEmail' => 'core/controllers/UserController.php@getUserByEmail', // Authenticated users
     'api/user/update' => 'core/controllers/UserController.php@update', // Authenticated users
-    'api/user/reset-password' => 'core/controllers/UserController.php@resetPassword', // Authenticated users
     // Admin-Only Routes (JWT & Admin Role Required)
     'api/user/getAll' => 'core/controllers/UserController.php@getAll',
     'api/user/delete' => 'core/controllers/UserController.php@delete',

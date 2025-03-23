@@ -1,5 +1,6 @@
 <?php
 
+use CryptoTrade\Models\EmailTokenType;
 use CryptoTrade\Services\EmailTokenService;
 
 require_once __DIR__ . '/../data_access/UserRepository.php';
@@ -86,8 +87,8 @@ class UserController {
                 ];
 
                 // Generate token for email confirmation
-                $token = EmailTokenService::generateToken($data['email'], \CryptoTrade\Models\EmailTokenType::EMAIL_CONFIRMATION);
-                EmailTokenService::sendToken($data['email'], $token, \CryptoTrade\Models\EmailTokenType::EMAIL_CONFIRMATION);
+                $token = EmailTokenService::generateToken($data['email'], EmailTokenType::EMAIL_CONFIRMATION);
+                EmailTokenService::sendToken($data['email'], $token, EmailTokenType::EMAIL_CONFIRMATION);
 
                 $userId = $this->userRepository->register($data);
                 echo json_encode(['success' => true, 'user_id' => $userId]);
@@ -276,7 +277,6 @@ class UserController {
      */
     public function resetPassword()
     {
-        $this->checkAuthenticated();
         // generate token for password reset
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
@@ -294,8 +294,8 @@ class UserController {
                 // TODO: Check if email service works before sending token and changing password
 
 
-                $token = EmailTokenService::generateToken($user['id'], \CryptoTrade\Models\EmailTokenType::PASSWORD_RESET);
-                EmailTokenService::sendToken($email, $token, \CryptoTrade\Models\EmailTokenType::PASSWORD_RESET);
+                $token = EmailTokenService::generateToken($user['id'], EmailTokenType::PASSWORD_RESET);
+                EmailTokenService::sendToken($email, $token, EmailTokenType::PASSWORD_RESET);
                 EmailTokenService::resetPassword($token);
 
                 echo json_encode(['success' => true, 'message' => "Password reset token sent to email."]);
@@ -304,6 +304,34 @@ class UserController {
             }
         }
 
+    }
+
+    /**
+     * Resend email token (for email validation only.)
+     */
+    public function resendVerificationEmail()
+    {
+        $this->checkAuthenticated();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                if (empty($_POST['email'])) {
+                    throw new Exception("Email is required.");
+                }
+
+                $email = trim($_POST['email']);
+                $user = $this->userRepository->get_by_email($email);
+
+                if (!$user) {
+                    throw new Exception("User not found.");
+                }
+
+                EmailTokenService::resendVerificationToken($email, EmailTokenType::EMAIL_CONFIRMATION);
+                echo json_encode(['success' => true, 'message' => "Email token resent to email."]);
+            } catch (Exception $e) {
+                echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            }
+        }
     }
 }
 
