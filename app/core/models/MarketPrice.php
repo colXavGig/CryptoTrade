@@ -6,17 +6,17 @@ use DateTime;
 
 class MarketPrice implements RepoCompatibility
 {
-    public int $id;
-    public int $crypto_id;
-    public float $price;
-    public DateTime $created_at;
-
     private const FIELD_NAMES = [
         'id',
         'crypto_id',
         'price',
         'created_at'
     ];
+    public int $id;
+    public int $crypto_id;
+    public float $price;
+    public DateTime $created_at;
+
     public function __construct(int $id, int $crypto_id, float $price, DateTime $created_at)
     {
         $this->id = $id;
@@ -35,6 +35,11 @@ class MarketPrice implements RepoCompatibility
         );
     }
 
+    static function getFieldNames(): array
+    {
+        return self::FIELD_NAMES;
+    }
+
     public function toArray(): array
     {
         return [
@@ -43,10 +48,5 @@ class MarketPrice implements RepoCompatibility
             'price' => $this->price,
             'created_at' => $this->created_at
         ];
-    }
-
-    static function getFieldNames(): array
-    {
-        return self::FIELD_NAMES;
     }
 }

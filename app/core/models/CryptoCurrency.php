@@ -4,15 +4,6 @@ namespace CryptoTrade\Models;
 
 class CryptoCurrency implements RepoCompatibility
 {
-    public $id;
-    public $name;
-    public $sign;
-    public $symbol;
-    public $intitial_price;
-    public $current_price;
-    public $volatibility;
-    public $created_at;
-
     private const  FIELD_NAMES = [
         'id',
         'name',
@@ -23,6 +14,14 @@ class CryptoCurrency implements RepoCompatibility
         'volatibility',
         'created_at'
     ];
+    public $id;
+    public $name;
+    public $sign;
+    public $symbol;
+    public $intitial_price;
+    public $current_price;
+    public $volatibility;
+    public $created_at;
 
     public function __construct($id, $name, $sign, $symbol, $intitial_price, $current_price, $volatibility, $created_at)
     {
@@ -36,7 +35,8 @@ class CryptoCurrency implements RepoCompatibility
         $this->created_at = $created_at;
     }
 
-    public static function fromArray($array): CryptoCurrency {
+    public static function fromArray($array): CryptoCurrency
+    {
         assert(is_array($array));
         assert(array_key_exists('id', $array));
         assert(array_key_exists('name', $array));
@@ -59,7 +59,14 @@ class CryptoCurrency implements RepoCompatibility
             $array['created_at']
         );
     }
-    public function toArray(): array {
+
+    static function getFieldNames(): array
+    {
+        return self::FIELD_NAMES;
+    }
+
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -70,10 +77,5 @@ class CryptoCurrency implements RepoCompatibility
             'volatibility' => $this->volatibility,
             'created_at' => $this->created_at,
         ];
-    }
-
-    static function getFieldNames(): array
-    {
-        return self::FIELD_NAMES;
     }
 }

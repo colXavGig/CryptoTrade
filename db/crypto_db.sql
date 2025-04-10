@@ -113,6 +113,16 @@ CREATE TABLE payments (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- 11. Email Tokens Table
+CREATE TABLE email_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    type ENUM('verify_email', 'reset_password') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Insert Admin User
 INSERT INTO users (email, password_hash, role, balance, two_factor_enabled)
 VALUES ('admin@cryptotrade.com', SHA2('admin123', 256), 'admin', 100000.00, TRUE);

@@ -4,16 +4,6 @@ namespace CryptoTrade\Models;
 
 class User implements RepoCompatibility
 {
-    public $id;
-    public $email;
-    public $role; // TODO: handle role with through inheritence
-    /* User should be an abstract class with Admin and... Client
-     as child ? They have different  behavior and admin doesnt need
-    balance/UserWallets */
-    public $balance; // TODO: store balance in UserWallets
-    public $two_factor_enabled;
-    public $created_at;
-
     private const FIELD_NAMES = [
         "id",
         "email",
@@ -22,6 +12,15 @@ class User implements RepoCompatibility
         "two_factor_enabled",
         "created_at",
     ];
+    public $id;
+        public $email; // TODO: handle role with through inheritence
+    /* User should be an abstract class with Admin and... Client
+     as child ? They have different  behavior and admin doesnt need
+    balance/UserWallets */
+    public $role; // TODO: store balance in UserWallets
+public $balance;
+    public $two_factor_enabled;
+    public $created_at;
 
     public function __construct($id, $email, $role, $balance, $two_factor_enabled, $created_at)
     {
@@ -33,7 +32,8 @@ class User implements RepoCompatibility
         $this->created_at = $created_at;
     }
 
-    public static function fromArray(array $array): User {
+    public static function fromArray(array $array): User
+    {
         assert(array_key_exists('id', $array));
         assert(array_key_exists('email', $array));
         assert(array_key_exists('role', $array));
@@ -51,7 +51,13 @@ class User implements RepoCompatibility
         );
     }
 
-    public function toArray(): array {
+    static function getFieldNames(): array
+    {
+        return self::FIELD_NAMES;
+    }
+
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
             'email' => $this->email,
@@ -60,11 +66,6 @@ class User implements RepoCompatibility
             'two_factor_enabled' => $this->two_factor_enabled,
             'created_at' => $this->created_at,
         ];
-    }
-
-    static function getFieldNames(): array
-    {
-        return self::FIELD_NAMES;
     }
 }
 

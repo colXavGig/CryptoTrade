@@ -1,8 +1,11 @@
 <?php
 namespace CryptoTrade\Services;
-class CSRFService {
+
+class CSRFService
+{
     // Generate and store CSRF token in session
-    public static function generateToken(): string {
+    public static function generateToken(): string
+    {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
@@ -15,7 +18,8 @@ class CSRFService {
     }
 
     // Verify CSRF token in a request (utility function)
-    public static function verifyToken($token): void {
+    public static function verifyToken($token): void
+    {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
@@ -27,4 +31,5 @@ class CSRFService {
         }
     }
 }
+
 ?>

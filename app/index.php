@@ -1,8 +1,11 @@
 <?php
+// autoload
+require_once __DIR__ . '/vendor/autoload.php';
 // Generate CSRF token and store it in session (start session if not already started)
 
-use CryptoTrade\Services\CSRFService;
 
+require_once __DIR__ . '/core/services/CSRFService.php'; // added back the CSRFService.php file require to fix the namespace issue
+use CryptoTrade\Services\CSRFService;
 CSRFService::generateToken();
 // routing logic (frontend routes and API routes detection)
 require_once __DIR__ . '/core/services/routing_service.php';

@@ -1,5 +1,6 @@
 <?php
-namespace App\Services;
+
+namespace CryptoTrade\Services;
 // Use environment variables to store sensitive information
 require_once __DIR__ . '/../../vendor/autoload.php'; // Load Composer dependencies
 
@@ -7,12 +8,16 @@ use Dotenv\Dotenv;
 use PDO;
 use PDOException;
 
-class Database {
+class Database
+{
     private static ?PDO $connection = null;
 
-    private function __construct() {} // Prevent instantiation
+    private function __construct()
+    {
+    } // Prevent instantiation
 
-    public static function getConnection(): PDO {
+    public static function getConnection(): PDO
+    {
         if (self::$connection === null) {
             // Load environment variables
             $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
@@ -27,9 +32,9 @@ class Database {
 
             $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset"; // Data Source Name
             $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Enable error exceptions
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Enable error exceptions
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Fetch results as associative arrays
-                PDO::ATTR_EMULATE_PREPARES   => false, // Prevent SQL injection
+                PDO::ATTR_EMULATE_PREPARES => false, // Prevent SQL injection
             ];
 
             try {
