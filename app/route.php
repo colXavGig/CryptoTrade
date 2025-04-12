@@ -3,14 +3,14 @@
 
 return [
     // Public Routes (No Authentication Required)
-    'home' => 'views/pages/home.php',
-    'about' => 'views/pages/about.php',
-    'contact' => 'views/pages/contact.php',
-    'login' => 'views/pages/login.php',
-    'register' => 'views/pages/register.php',
-    'profile' => 'views/pages/profile.php',
-    'email-verification' => 'views/pages/email-verification.php',
-    '404' => 'views/pages/404.php',
+    'home' => 'views/pages_public/home.php',
+    'about' => 'views/pages_public/about.php',
+    'contact' => 'views/pages_public/contact.php',
+    'login' => 'views/pages_public/login.php',
+    'register' => 'views/pages_public/register.php',
+    'profile' => 'views/pages_public/profile.php',
+    'email-verification' => 'views/pages_public/email-verification.php',
+    '404' => 'views/pages_public/404.php',
 
     // ---------------------------- USER API ROUTES (PSR-4 autoloaded) ----------------------------
 
