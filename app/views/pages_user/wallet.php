@@ -2,13 +2,22 @@
 
 use CryptoTrade\Services\JWTService;
 use CryptoTrade\Services\UserWalletService;
-use CryptoTrade\Models\UserWallet;
+use CryptoTrade\Services\MarketPriceService;
 
 // Authenticated user session
 $user = JWTService::verifyJWT();
 $walletService = new UserWalletService();
 $wallets = $walletService->getWalletForUser($user['user_id']);
 
+// Get current crypto prices and metadata
+$priceService = new MarketPriceService();
+$prices = $priceService->getLatestPrices(); // includes: id, name, symbol, price
+
+// Map for quick lookup
+$cryptoMap = [];
+foreach ($prices as $crypto) {
+    $cryptoMap[$crypto['id']] = $crypto;
+}
 ?>
 
 <div class="container">
@@ -20,34 +29,31 @@ $wallets = $walletService->getWalletForUser($user['user_id']);
         <table class="wallet-table">
             <thead>
             <tr>
-                <th>Crypto ID</th>
+                <th>Name</th>
+                <th>Symbol</th>
                 <th>Balance</th>
-                <th>Update</th>
-                <th>Delete</th>
+                <th>Value (USD)</th>
+                <th>Sell All</th>
             </tr>
             </thead>
             <tbody>
             <?php foreach ($wallets as $wallet): ?>
+                <?php
+                $crypto = $cryptoMap[$wallet->crypto_id] ?? null;
+                if (!$crypto) continue;
+                $value = $wallet->balance * $crypto['price'];
+                ?>
                 <tr>
-                    <td><?= htmlspecialchars($wallet->crypto_id) ?></td>
+                    <td><?= htmlspecialchars($crypto['name']) ?></td>
+                    <td><?= htmlspecialchars($crypto['symbol']) ?></td>
                     <td><?= number_format($wallet->balance, 8) ?></td>
+                    <td>$<?= number_format($value, 2) ?></td>
 
-                    <!-- Update Wallet Form -->
-                    <td>
-                        <form method="POST" action="/?route=api/user/wallet/update" style="display: flex; gap: 4px;">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <input type="hidden" name="crypto_id" value="<?= $wallet->crypto_id ?>">
-                            <input type="number" step="0.00000001" name="balance" placeholder="New balance" required>
-                            <button type="submit">Update</button>
-                        </form>
-                    </td>
-
-                    <!-- Delete Wallet Form -->
                     <td>
                         <form method="POST" action="/?route=api/user/wallet/delete">
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <input type="hidden" name="crypto_id" value="<?= $wallet->crypto_id ?>">
-                            <button type="submit" onclick="return confirm('Are you sure you want to delete this wallet?')">Delete</button>
+                            <button type="submit" onclick="return confirm('Sell all <?= $crypto['symbol'] ?>?')">Sell All</button>
                         </form>
                     </td>
                 </tr>
