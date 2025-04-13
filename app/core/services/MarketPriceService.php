@@ -42,6 +42,32 @@ class MarketPriceService
         return $latestPrices;
     }
 
+    public function getLatestAndPreviousPrices(): array
+    {
+        $cryptos = $this->cryptoRepo->getAllCryptoCurrencies();
+        $result = [];
+
+        foreach ($cryptos as $crypto) {
+            $history = $this->priceRepo->getRecentPricesByCryptoId($crypto->id, 2);
+            $latest = $history[0] ?? null;
+            $previous = $history[1] ?? null;
+
+            $result[] = [
+                'id' => $crypto->id,
+                'name' => $crypto->name,
+                'symbol' => $crypto->symbol,
+                'sign' => $crypto->sign,
+                'volatility' => $crypto->volatility,
+                'price' => $latest?->price ?? $crypto->current_price,
+                'previous' => $previous?->price ?? null,
+                'updated_at' => $latest?->updated_at?->format('Y-m-d H:i:s')
+            ];
+        }
+
+        return $result;
+    }
+
+
     /**
      * @throws \Exception
      */
@@ -59,4 +85,6 @@ class MarketPriceService
     {
         return $this->priceRepo->getLatestByCryptoId($cryptoId);
     }
+
+
 }

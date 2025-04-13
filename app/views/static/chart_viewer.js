@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/?route=api/prices/live');
             const { data } = await res.json();
 
-            tabContainer.innerHTML = ''; // clear old tabs
+            tabContainer.innerHTML = '';
 
             data.forEach(crypto => {
                 const btn = document.createElement('button');
@@ -52,9 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     second: '2-digit'
                 })
             ).reverse();
-
-
-
 
             const prices = data.map(p => p.price).reverse();
 
@@ -109,7 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadTabs();
 
+    // Auto-refresh every 60 seconds
+    setInterval(() => {
+        if (activeId !== null) {
+            loadChart(activeId);
+        }
+    }, 60000);
 });
-
-
-

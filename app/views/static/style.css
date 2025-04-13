@@ -275,3 +275,32 @@ input {
 .controls {
     margin-bottom: 1rem;
 }
+
+/* LIVE PRICES */
+#live-price-table-wrapper {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+#live-price-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#live-price-table th, #live-price-table td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.price-prev {
+    color: gray;
+    font-size: 0.9em;
+}
+
+.trend-up {
+    color: #00ff00;
+}
+
+.trend-down {
+    color: #ff3c3c;
+}

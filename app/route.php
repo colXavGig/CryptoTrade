@@ -55,6 +55,8 @@ return [
     // ---------------------------- MARKET PRICE API ROUTES (PSR-4 autoloaded) ----------------------------
     'api/prices/live' => 'CryptoTrade\Controllers\MarketPriceController@getLivePrices',
     'api/prices/chart' => 'CryptoTrade\Controllers\MarketPriceController@getChartData',
+    'api/prices/with_previous' => 'CryptoTrade\Controllers\MarketPriceController@getWithPrevious',
+
 ];
 
 ?>
