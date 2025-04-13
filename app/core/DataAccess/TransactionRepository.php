@@ -7,11 +7,21 @@ use DateMalformedStringException;
 
 class TransactionRepository extends Repository
 {
+    private static ?TransactionRepository $instance = null;
     protected function __construct()
     {
         $this->table = 'transactions';
         $this->columns = Transaction::getFieldNames();
         parent::__construct();
+    }
+
+    // Singleton pattern to ensure only one instance of TransactionRepository
+    public static function getInstance(): TransactionRepository
+    {
+        if (self::$instance === null) {
+            self::$instance = new TransactionRepository();
+        }
+        return self::$instance;
     }
 
     /**

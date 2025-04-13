@@ -64,6 +64,22 @@ return [
     'api/user/wallet/update' => 'CryptoTrade\Controllers\UserWalletController@updateWallet',
     'api/user/wallet/delete' => 'CryptoTrade\Controllers\UserWalletController@deleteWallet',
 
+    // ---------------------------- TRANSACTION API ROUTES (PSR-4 autoloaded) ----------------------------
+    'api/user/transactions' => 'CryptoTrade\Controllers\TransactionController@getMyTransactions',
+    'api/user/transactions/sell' => 'CryptoTrade\Controllers\TransactionController@sellCrypto',
+    'api/user/transactions/sell_all' => 'CryptoTrade\Controllers\TransactionController@sellAll',
+    'api/user/transactions/buy' => 'CryptoTrade\Controllers\TransactionController@buyCrypto',
+    'api/user/transactions/getById' => 'CryptoTrade\Controllers\TransactionController@getTransactionById',
+    'api/user/transactions/getAll' => 'CryptoTrade\Controllers\TransactionController@getAllTransactions',
+    'api/user/transactions/getByUserId' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByUserId',
+    'api/user/transactions/getByCryptoId' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByCryptoId',
+    'api/user/transactions/getByType' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByType',
+    'api/user/transactions/getByDate' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByDate',
+    'api/user/transactions/getByDateRange' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByDateRange',
+    'api/user/transactions/getByPriceRange' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByPriceRange',
+    'api/user/transactions/getByAmountRange' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByAmountRange',
+    'api/user/transactions/getByTransactionId' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByTransactionId',
+
 ];
 
 ?>
