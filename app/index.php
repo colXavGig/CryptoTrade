@@ -21,3 +21,5 @@ require_once __DIR__ . '/core/services/routing_service.php';
 <!-- CSRF token for AJAX requests -->
 <script>const CSRF_TOKEN = "<?= $_SESSION['csrf_token']; ?>";</script>
 <script src="views/static/app.js"></script>
+<script src="views/static/chart_viewer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

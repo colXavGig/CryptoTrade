@@ -51,6 +51,10 @@ return [
     // Admin-Only Routes (JWT + Admin Role Required)
     'api/user/getAll' => 'CryptoTrade\Controllers\UserController@getAll',
     'api/user/delete' => 'CryptoTrade\Controllers\UserController@delete',
+
+    // ---------------------------- MARKET PRICE API ROUTES (PSR-4 autoloaded) ----------------------------
+    'api/prices/live' => 'CryptoTrade\Controllers\MarketPriceController@getLivePrices',
+    'api/prices/chart' => 'CryptoTrade\Controllers\MarketPriceController@getChartData',
 ];
 
 ?>
