@@ -53,9 +53,16 @@ return [
     'api/user/delete' => 'CryptoTrade\Controllers\UserController@delete',
 
     // ---------------------------- MARKET PRICE API ROUTES (PSR-4 autoloaded) ----------------------------
+    // public endpoints
     'api/prices/live' => 'CryptoTrade\Controllers\MarketPriceController@getLivePrices',
     'api/prices/chart' => 'CryptoTrade\Controllers\MarketPriceController@getChartData',
     'api/prices/with_previous' => 'CryptoTrade\Controllers\MarketPriceController@getWithPrevious',
+
+    // ---------------------------- USER WALLET API ROUTES (PSR-4 autoloaded) ----------------------------
+    //hybrid endpoints -> accept a user_id param for admin or use the logged-in user
+    'api/user/wallet' => 'CryptoTrade\Controllers\UserWalletController@getMyWallet',
+    'api/user/wallet/update' => 'CryptoTrade\Controllers\UserWalletController@updateWallet',
+    'api/user/wallet/delete' => 'CryptoTrade\Controllers\UserWalletController@deleteWallet',
 
 ];
 

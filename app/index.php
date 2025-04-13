@@ -18,6 +18,7 @@ require_once __DIR__ . '/core/services/routing_service.php';
 <?php require_once 'views/components/footer.php'; ?>
 
 
+
 <!-- CSRF token for AJAX requests -->
 <script>const CSRF_TOKEN = "<?= $_SESSION['csrf_token']; ?>";</script>
 <script src="views/static/app.js"></script>

@@ -145,12 +145,12 @@ VALUES
 (4, 1.00),
 (5, 120.00);
 
--- Insert Sample Users
+-- Insert Sample Users (password = 'password')
 INSERT INTO users (email, password_hash, role, balance, two_factor_enabled) VALUES
-('admin', '$2y$10$znTMP8pvA0uP5SAcd25AtuZCom/1bH351oo5bzvhZDhCMztzWglUO', 'admin', 25000, TRUE),
+('admin', '$2y$10$kefxc4rnRatJr7f6oypzWuA4KHxO7XgdQfYZus5/1ElYHuM/DwtV2', 'admin', 25000, TRUE),
 ('a3emond@gmail.com', '$2y$10$DaqlKpOOivaiUwbLFh7/pegZ8iCEJBbALlGhxubnnHSG0V2AWxsme', 'admin', 25000, TRUE),
-('user1@cryptotrade.com', '$2y$10$GPz5jlzQ40uW.2zHuKfuF.O6QTStPBRZJL7yeM4GxNed.5Xh1nok6', 'user', 5000, FALSE),
-('user2@cryptotrade.com', '$2y$10$dw43wQ0OcIfpUfAV6o..VOZiXttRqdE4.RietyqIQ3VB0/Q7JT6vu', 'user', 10000, TRUE);
+('user1@cryptotrade.com', '$2y$10$kefxc4rnRatJr7f6oypzWuA4KHxO7XgdQfYZus5/1ElYHuM/DwtV2', 'user', 5000, FALSE),
+('user2@cryptotrade.com', '$2y$10$kefxc4rnRatJr7f6oypzWuA4KHxO7XgdQfYZus5/1ElYHuM/DwtV2', 'user', 10000, TRUE);
 
 -- Insert Sample User Wallets
 INSERT INTO user_wallets (user_id, crypto_id, balance)
