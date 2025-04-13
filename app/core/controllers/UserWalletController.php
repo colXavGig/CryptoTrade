@@ -82,7 +82,7 @@ class UserWalletController
         }
     }
 
-    public function deleteWallet(): void
+    public function deleteWallet(): void // TODO: Replace with "Sell All" by creating a transaction, updating user balance, then deleting wallet
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'error' => 'Method not allowed', 'status' => 405]);
@@ -112,11 +112,25 @@ class UserWalletController
                 throw new Exception("Wallet not found.");
             }
 
+            // TODO: Sell logic placeholder
+            // This should:
+            // 1. Fetch the current market price of the crypto
+            // 2. Calculate USD value = wallet->balance * current price
+            // 3. Add USD value to user’s account balance
+            // 4. Create a transaction log for this operation
+            // 5. Then delete the wallet
+
+            // $price = $marketPriceService->getLatestPriceFor($wallet->crypto_id);
+            // $usdValue = $wallet->balance * $price->price;
+            // $userService->addToBalance($targetUserId, $usdValue);
+            // $transactionService->logSellTransaction($wallet, $usdValue);
+
             $this->walletService->deleteWallet($wallet);
 
-            echo json_encode(['success' => true, 'message' => 'Wallet deleted', 'status' => 200]);
+            echo json_encode(['success' => true, 'message' => 'Wallet sold and deleted', 'status' => 200]);
         } catch (Exception $e) {
             echo json_encode(['success' => false, 'error' => $e->getMessage(), 'status' => 400]);
         }
     }
+
 }
