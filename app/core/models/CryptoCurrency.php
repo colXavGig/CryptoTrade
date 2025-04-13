@@ -2,36 +2,47 @@
 
 namespace CryptoTrade\Models;
 
+use DateTime;
+
 class CryptoCurrency implements RepoCompatibility
 {
-    private const  FIELD_NAMES = [
+    private const FIELD_NAMES = [
         'id',
         'name',
         'sign',
         'symbol',
-        'intitial_price',
+        'initial_price',
         'current_price',
-        'volatibility',
+        'volatility',
         'created_at'
     ];
-    public $id;
-    public $name;
-    public $sign;
-    public $symbol;
-    public $intitial_price;
-    public $current_price;
-    public $volatibility;
-    public $created_at;
 
-    public function __construct($id, $name, $sign, $symbol, $intitial_price, $current_price, $volatibility, $created_at)
-    {
+    public int $id;
+    public string $name;
+    public string $sign;
+    public string $symbol;
+    public float $initial_price;
+    public float $current_price;
+    public string $volatility;
+    public DateTime $created_at;
+
+    public function __construct(
+        int $id,
+        string $name,
+        string $sign,
+        string $symbol,
+        float $initial_price,
+        float $current_price,
+        string $volatility,
+        DateTime $created_at
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->sign = $sign;
         $this->symbol = $symbol;
-        $this->intitial_price = $intitial_price;
+        $this->initial_price = $initial_price;
         $this->current_price = $current_price;
-        $this->volatibility = $volatibility;
+        $this->volatility = $volatility;
         $this->created_at = $created_at;
     }
 
@@ -42,25 +53,24 @@ class CryptoCurrency implements RepoCompatibility
         assert(array_key_exists('name', $array));
         assert(array_key_exists('sign', $array));
         assert(array_key_exists('symbol', $array));
-        assert(array_key_exists('intitial_price', $array));
+        assert(array_key_exists('initial_price', $array));
         assert(array_key_exists('current_price', $array));
-        assert(array_key_exists('volatibility', $array));
+        assert(array_key_exists('volatility', $array));
         assert(array_key_exists('created_at', $array));
 
-
         return new CryptoCurrency(
-            $array['id'],
+            (int) $array['id'],
             $array['name'],
             $array['sign'],
             $array['symbol'],
-            $array['intitial_price'],
-            $array['current_price'],
-            $array['volatibility'],
-            $array['created_at']
+            (float) $array['initial_price'],
+            (float) $array['current_price'],
+            $array['volatility'],
+            new DateTime($array['created_at'])
         );
     }
 
-    static function getFieldNames(): array
+    public static function getFieldNames(): array
     {
         return self::FIELD_NAMES;
     }
@@ -72,10 +82,10 @@ class CryptoCurrency implements RepoCompatibility
             'name' => $this->name,
             'sign' => $this->sign,
             'symbol' => $this->symbol,
-            'intitial_price' => $this->intitial_price,
+            'initial_price' => $this->initial_price,
             'current_price' => $this->current_price,
-            'volatibility' => $this->volatibility,
-            'created_at' => $this->created_at,
+            'volatility' => $this->volatility,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -1,6 +1,6 @@
 services:
   apache:
-    build: 
+    build:
       context: .
       dockerfile: docker/Dockerfile
     container_name: CryptoTrade_apache
@@ -12,9 +12,9 @@ services:
       - ./docker/apache2/apache.conf:/etc/apache2/sites-available/000-default.conf
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
     env_file:
-      - ./app/.env # Load environment variables from .env file
+      - ./app/.env
     depends_on:
-      - mysql 
+      - mysql
     networks:
       - cryptoTrade_network
 
@@ -29,10 +29,10 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: user
     ports:
-      - "3306:3306"  # Expose MySQL on localhost
+      - "3306:3306"
     volumes:
-      - ./db/crypto_db.sql:/crypto_db.sql
-      - mysql_data:/var/lib/mysql  # Persistent MySQL data
+      - mysql_data:/var/lib/mysql            # Persistent DB data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql  # Auto-run script
     networks:
       - cryptoTrade_network
 
@@ -41,7 +41,7 @@ services:
     container_name: labo4_phpmyadmin
     restart: always
     ports:
-      - "8081:80"  # Access phpMyAdmin at localhost:8081
+      - "8081:80"
     environment:
       PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -49,6 +49,19 @@ services:
       - mysql
     networks:
       - cryptoTrade_network
+
+  market-simulator:
+    build:
+      context: .
+      dockerfile: daemon/Dockerfile
+    container_name: CryptoTrade_market_simulator
+    volumes:
+      - ./app:/app
+    depends_on:
+      - mysql
+    networks:
+      - cryptoTrade_network
+    restart: unless-stopped
 
 networks:
   cryptoTrade_network:
