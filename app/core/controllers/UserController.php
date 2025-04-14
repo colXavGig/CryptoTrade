@@ -114,21 +114,22 @@ class UserController
      */
     public function confirmEmail(): void
     {
-        // call updateTwoFactorAuthentication from EmailTokenService
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 if (empty($_POST['token'])) {
                     throw new Exception("Token is required.");
                 }
+
                 $token = trim($_POST['token']);
                 EmailTokenService::confirmEmail($token);
 
+                echo json_encode(['success' => true, 'message' => "Email confirmed successfully"]);
             } catch (Exception $e) {
                 echo json_encode(['success' => false, 'error' => $e->getMessage()]);
             }
-            echo json_encode(['success' => true, 'message' => "Email confirmed successfully"]);
         }
     }
+
 
     /**
      * Login user
