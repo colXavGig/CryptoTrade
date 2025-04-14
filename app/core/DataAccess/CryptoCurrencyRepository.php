@@ -6,11 +6,19 @@ use CryptoTrade\Models\CryptoCurrency;
 
 class CryptoCurrencyRepository extends Repository
 {
+    private static ?self $instance = null;
     protected function __construct()
     {
         parent::__construct();
         $this->table = "cryptocurrencies";
         $this->columns = CryptoCurrency::getFieldNames();
+    }
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     public function getAllCryptoCurrencies(): array

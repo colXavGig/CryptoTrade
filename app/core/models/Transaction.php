@@ -1,5 +1,4 @@
 <?php
-
 namespace CryptoTrade\Models;
 
 use DateMalformedStringException;
@@ -16,18 +15,24 @@ class Transaction implements RepoCompatibility
         'price',
         'created_at'
     ];
+
     public int $id;
     public int $user_id;
     public int $crypto_id;
-    public int $transaction_type;
+    public string $transaction_type; // fix: Changed from int to string (it's an enum in the database) TODO: implement constants for transaction types buy, sell
     public float $amount;
     public float $price;
     public DateTime $created_at;
 
     public function __construct(
-        int $id, int $user_id, int $crypto_id, int $transaction_type, float $amount, float $price, DateTime $created_at
-    )
-    {
+        int $id,
+        int $user_id,
+        int $crypto_id,
+        string $transaction_type, // Updated here too
+        float $amount,
+        float $price,
+        DateTime $created_at
+    ) {
         $this->id = $id;
         $this->user_id = $user_id;
         $this->crypto_id = $crypto_id;

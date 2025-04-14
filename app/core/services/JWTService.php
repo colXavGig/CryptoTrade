@@ -55,20 +55,42 @@ class JWTService
         self::init();
         $headers = getallheaders();
 
-        if (!isset($headers['Authorization']) && !isset($headers['authorization'])) {
-            http_response_code(401);
-            echo json_encode(["error" => "Missing Authorization header"]);
-            exit;
+        $token = null;
+
+        // Check for Bearer token
+        if (isset($headers['Authorization']) || isset($headers['authorization'])) {
+            $authHeader = $headers['Authorization'] ?? $headers['authorization'];
+            $token = str_starts_with($authHeader, "Bearer ")
+                ? substr($authHeader, 7)
+                : $authHeader;
+        }
+        // Fallbacks using 'jwt' key
+        elseif (!empty($_POST['jwt'])) {
+            $token = $_POST['jwt'];
+        } elseif (!empty($_SESSION['jwt'])) {
+            $token = $_SESSION['jwt'];
+        } elseif (!empty($_COOKIE['jwt'])) {
+            $token = $_COOKIE['jwt'];
         }
 
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'];
-        $token = str_replace("Bearer ", "", $authHeader);
+
+        if (!$token) {
+            echo json_encode([
+                "success" => false,
+                "error" => "Missing JWT token",
+                "status" => 401
+            ]);
+            exit;
+        }
 
         $decoded = self::getUserFromToken($token);
 
         if (!$decoded || isset($decoded['error'])) {
-            http_response_code(401);
-            echo json_encode(["error" => "Invalid or expired token"]);
+            echo json_encode([
+                "success" => false,
+                "error" => "Invalid or expired token",
+                "status" => 401
+            ]);
             exit;
         }
 
@@ -80,6 +102,8 @@ class JWTService
             "two_factor_enabled" => $decoded['two_factor_enabled']
         ];
     }
+
+
 
     // Get user data from token (utility function)
     public static function getUserFromToken($token): array

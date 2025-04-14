@@ -1,90 +1,133 @@
-document.addEventListener("DOMContentLoaded", function () {
+import { initLivePrices } from './live_prices.js';
+import { initChartViewer } from './chart_viewer.js';
+
+document.addEventListener("DOMContentLoaded", () => {
     checkUserAuth();
     setupSpaNavigation();
-    setupLogoutButton();  // Ensure the logout button works when available
+    setupLogoutButton();
+    reinitializePage(getCurrentRoute()); // First time load
+    window.addEventListener("popstate", handlePopState); // Handle browser back/forward
 });
 
-// Function to setup SPA navigation
+function getCurrentRoute() {
+    const path = window.location.pathname;
+    return path.startsWith('/') ? path.slice(1) : path;
+}
+
 function setupSpaNavigation() {
     document.querySelectorAll(".spa-link").forEach(link => {
         link.addEventListener("click", function (e) {
             e.preventDefault();
-            let route = this.getAttribute("href");
-            history.pushState(null, "", "/" + route);
+            const route = this.getAttribute("href");
 
-            // Load content dynamically
-            fetch("index.php?route=" + route)
-                .then(response => response.text())
-                .then(data => {
-                    let parser = new DOMParser();
-                    let doc = parser.parseFromString(data, "text/html");
-                    let newContent = doc.querySelector(".main-content").innerHTML;
-                    document.querySelector(".main-content").innerHTML = newContent;
-                    
-                    setupLogoutButton(); // Ensure logout works on dynamically loaded content
-                });
+            history.pushState(null, "", "/" + route);
+            loadRouteContent(route);
         });
     });
 }
 
-// Function to check authentication status
+function loadRouteContent(route) {
+    fetch("index.php?route=" + route)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newContent = doc.querySelector(".main-content").innerHTML;
+
+            document.querySelector(".main-content").innerHTML = newContent;
+
+            // Rebind everything
+            setupSpaNavigation();
+            setupLogoutButton();
+            reinitializePage(route);
+        })
+        .catch(err => {
+            console.error("Failed to load page:", err);
+        });
+}
+
+function handlePopState() {
+    const route = getCurrentRoute();
+    loadRouteContent(route);
+}
+
+function reinitializePage(route) {
+    switch (route) {
+        case "user-market":
+            initLivePrices();
+            initChartViewer();
+            break;
+        case "home":
+            initLivePrices();
+            initChartViewer();
+            break;
+        case "user-wallet":
+            // TODO: Add wallet-specific logic
+            break;
+        case "user-history":
+            // TODO: Add history transaction filtering logic
+            break;
+        default:
+            break;
+    }
+}
+
 function checkUserAuth() {
-    let token = sessionStorage.getItem("jwt"); 
-    
+    const token = sessionStorage.getItem("jwt");
+
     if (token) {
         fetch("api/user/verify", {
             method: "GET",
             headers: { "Authorization": "Bearer " + token }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.user_name) {
-                document.getElementById("user-greeting").innerText = "Welcome " + data.user_name;
-                document.getElementById("auth-links").style.display = "none";
+            .then(response => response.json())
+            .then(data => {
+                if (data.user_name) {
+                    const greeting = document.getElementById("user-greeting");
+                    const authLinks = document.getElementById("auth-links");
 
-                setupLogoutButton(); // Ensure logout button is attached
-            }
-        })
-        .catch(() => {
-            sessionStorage.removeItem("jwt");
-        });
+                    if (greeting) greeting.innerText = "Welcome " + data.user_name;
+                    if (authLinks) authLinks.style.display = "none";
+
+                    setupLogoutButton();
+                }
+            })
+            .catch(() => {
+                sessionStorage.removeItem("jwt");
+            });
     }
 }
 
-// Function to setup the logout button safely
 function setupLogoutButton() {
-    let logoutBtn = document.getElementById("logout-link");
+    const logoutBtn = document.getElementById("logout-link");
     if (logoutBtn) {
-        logoutBtn.removeEventListener("click", handleLogout); // Prevent duplicate listeners
+        logoutBtn.removeEventListener("click", handleLogout);
         logoutBtn.addEventListener("click", handleLogout);
     }
 }
 
-// Logout handler function
 function handleLogout(e) {
     e.preventDefault();
 
-    // Use the CSRF token constant from your script
     const formData = new URLSearchParams();
-    formData.append("csrf_token", CSRF_TOKEN); // CSRF_TOKEN is already defined in your script
+    formData.append("csrf_token", CSRF_TOKEN); // CSRF_TOKEN must be globally available
 
     fetch("api/user/logout", {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"  // Ensure PHP $_POST recognizes it
+            "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: formData.toString(),  // Convert to URL-encoded string
-        credentials: "include"  // Ensure cookies are sent
+        body: formData.toString(),
+        credentials: "include"
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            sessionStorage.removeItem("jwt");
-            
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 500);
-        }
-    })
-    .catch(error => console.error("Logout failed:", error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                sessionStorage.removeItem("jwt");
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 500);
+            }
+        })
+        .catch(error => console.error("Logout failed:", error));
 }

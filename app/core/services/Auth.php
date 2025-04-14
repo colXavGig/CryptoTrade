@@ -36,6 +36,9 @@ class Auth
 
             // Store token in session
             $_SESSION['jwt'] = $jwt;
+            // Set token in cookie
+            setcookie('jwt', $jwt, time() + 3600, "/");
+
 
             return $jwt;
         }
