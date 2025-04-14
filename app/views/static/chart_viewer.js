@@ -1,12 +1,9 @@
-let chart = null;
-let activeId = null;
-
-export function initChartViewer() {
+document.addEventListener('DOMContentLoaded', () => {
     const chartCanvas = document.getElementById('crypto-chart');
     const tabContainer = document.getElementById('crypto-tabs');
     const rangeSelector = document.getElementById('data-range');
-
-    if (!chartCanvas || !tabContainer || !rangeSelector) return;
+    let chart = null;
+    let activeId = null;
 
     const loadTabs = async () => {
         try {
@@ -101,16 +98,19 @@ export function initChartViewer() {
         }
     };
 
-    // Range selector change event
     rangeSelector.addEventListener('change', () => {
-        if (activeId !== null) loadChart(activeId);
+        if (activeId !== null) {
+            loadChart(activeId);
+        }
     });
 
-    // Load initial tabs/chart
     loadTabs();
 
-    // Refresh chart every 60s
+    // Auto-refresh every 60 seconds
     setInterval(() => {
-        if (activeId !== null) loadChart(activeId);
+        if (activeId !== null) {
+            loadChart(activeId);
+        }
     }, 60000);
-}
+});
+
