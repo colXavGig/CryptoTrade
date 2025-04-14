@@ -3,6 +3,7 @@
 namespace CryptoTrade\Models;
 
 use DateTime;
+use CryptoTrade\Models\EmailTokenType;
 
 class EmailToken implements RepoCompatibility
 {
@@ -41,8 +42,3 @@ class EmailToken implements RepoCompatibility
     }
 }
 
-enum EmailTokenType
-{
-    case EMAIL_CONFIRMATION;
-    case PASSWORD_RESET;
-}
