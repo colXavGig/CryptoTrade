@@ -2,6 +2,8 @@
 
 
 return [
+    // ----------------------------------- FRONTEND ROUTING -----------------------------------
+    // **IMPORTANT**: Do not put forward slashes in the route names, they are getting sanitized
     // Public Routes (No Authentication Required)
     'home' => 'views/pages_public/home.php',
     'about' => 'views/pages_public/about.php',
@@ -14,23 +16,23 @@ return [
     // common (all logged-in users)
     'profile' => 'views/pages_public/profile.php',
     // User Dashboard Routes (JWT Required)
-    'user/dashboard' => 'views/pages_user/dashboard.php',
-    'user/alerts' => 'views/pages_user/alerts.php',
-    'user/wallet' => 'views/pages_user/wallet.php',
-    'user/payment' => 'views/pages_user/payment.php',
-    'user/market' => 'views/pages_user/market.php',
-    'user/history' => 'views/pages_user/history.php',
-    'user/report' => 'views/pages_user/report.php',
+    'user-dashboard' => 'views/pages_user/dashboard.php',
+    'user-alerts' => 'views/pages_user/alerts.php',
+    'user-wallet' => 'views/pages_user/wallet.php',
+    'user-payment' => 'views/pages_user/payment.php',
+    'user-market' => 'views/pages_user/market.php',
+    'user-history' => 'views/pages_user/history.php',
+    'user-report' => 'views/pages_user/report.php',
 
-    // Admin Dashboard Routes (JWT + Admin Role Required)
-    'admin/dashboard' => 'views/pages_admin/dashboard.php',
-    'admin/users' => 'views/pages_admin/users.php',
-    'admin/transactions' => 'views/pages_admin/transactions.php',
-    'admin/settings' => 'views/pages_admin/settings.php',
-    'admin/alerts' => 'views/pages_admin/alerts.php',
-    'admin/logs' => 'views/pages_admin/logs.php',
-    'admin/cryptos' => 'views/pages_admin/cryptos.php',
-    'admin/payments' => 'views/pages_admin/payments.php',
+// Admin Dashboard Routes (JWT + Admin Role Required)
+    'admin-dashboard' => 'views/pages_admin/dashboard.php',
+    'admin-users' => 'views/pages_admin/users.php',
+    'admin-transactions' => 'views/pages_admin/transactions.php',
+    'admin-settings' => 'views/pages_admin/settings.php',
+    'admin-alerts' => 'views/pages_admin/alerts.php',
+    'admin-logs' => 'views/pages_admin/logs.php',
+    'admin-cryptos' => 'views/pages_admin/cryptos.php',
+    'admin-payments' => 'views/pages_admin/payments.php',
 
 
     // ---------------------------- USER API ROUTES (PSR-4 autoloaded) ----------------------------

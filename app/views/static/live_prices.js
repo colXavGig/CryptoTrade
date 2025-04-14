@@ -1,6 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+let livePriceInterval = null;
+
+export function initLivePrices() {
     const tableBody = document.querySelector('#live-price-table tbody');
-    let previousPrices = {};
+    if (!tableBody) return; // gracefully abort if element doesn't exist
 
     const loadLivePrices = async () => {
         try {
@@ -19,24 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         : '';
 
                 const row = `
-                <tr>
-                    <td>${crypto.symbol}</td>
-                    <td>${crypto.name}</td>
-                    <td>$${crypto.price.toFixed(2)}</td>
-                    <td class="price-prev">$${prev.toFixed(2)}</td>
-                    <td>${trendIcon}</td>
-                </tr>
-            `;
+                    <tr>
+                        <td>${crypto.symbol}</td>
+                        <td>${crypto.name}</td>
+                        <td>$${crypto.price.toFixed(2)}</td>
+                        <td class="price-prev">$${prev.toFixed(2)}</td>
+                        <td>${trendIcon}</td>
+                    </tr>
+                `;
 
                 tableBody.innerHTML += row;
             });
-
         } catch (err) {
             console.error('Failed to fetch live prices:', err);
         }
     };
 
+    // Clear previous intervals if any
+    if (livePriceInterval) {
+        clearInterval(livePriceInterval);
+    }
 
     loadLivePrices();
-    setInterval(loadLivePrices, 60000);
-});
+    livePriceInterval = setInterval(loadLivePrices, 60000);
+}

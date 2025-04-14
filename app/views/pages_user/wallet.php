@@ -62,3 +62,48 @@ foreach ($prices as $crypto) {
         </table>
     <?php endif; ?>
 </div>
+
+<!-- TODO: export in a standalone component for reusability -->
+<?php
+use CryptoTrade\Services\TransactionService;
+use CryptoTrade\DataAccess\CryptoCurrencyRepository;
+
+$transactionService = new TransactionService();
+$cryptoRepo = CryptoCurrencyRepository::getInstance();
+
+$transactions = $transactionService->getUserTransactions($user['user_id']);
+$recentTransactions = array_slice(array_reverse($transactions), 0, 5); // latest 5
+
+$cryptos = [];
+foreach ($cryptoRepo->getAllCryptoCurrencies() as $c) {
+    $cryptos[$c->id] = $c->symbol;
+}
+?>
+
+<h3>Recent Transactions</h3>
+<?php if (empty($recentTransactions)): ?>
+    <p>No recent transactions found.</p>
+<?php else: ?>
+    <table class="transaction-table">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Crypto</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Price (USD)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($recentTransactions as $tx): ?>
+            <tr>
+                <td><?= $tx->created_at->format('Y-m-d H:i') ?></td>
+                <td><?= htmlspecialchars($cryptos[$tx->crypto_id] ?? 'Unknown') ?></td>
+                <td><?= ucfirst($tx->transaction_type) ?></td>
+                <td><?= number_format($tx->amount, 8) ?></td>
+                <td>$<?= number_format($tx->price, 2) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php endif; ?>

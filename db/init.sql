@@ -123,9 +123,6 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Insert Admin User
-INSERT INTO users (email, password_hash, role, balance, two_factor_enabled)
-VALUES ('admin@cryptotrade.com', SHA2('admin123', 256), 'admin', 100000.00, TRUE);
 
 -- Insert Sample Cryptos 
 INSERT INTO cryptocurrencies (name, symbol, sign, initial_price, current_price, volatility)
