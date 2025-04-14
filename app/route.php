@@ -53,6 +53,8 @@ return [
     'api/user/delete' => 'CryptoTrade\Controllers\UserController@delete',
 
     // ---------------------------- MARKET PRICE API ROUTES (PSR-4 autoloaded) ----------------------------
+    //**IMPORTANT**: the market price changes are handled by a daemon service that runs in the background
+    // and updates the database. The API endpoints here are for fetching the data only.
     // public endpoints
     'api/prices/live' => 'CryptoTrade\Controllers\MarketPriceController@getLivePrices',
     'api/prices/chart' => 'CryptoTrade\Controllers\MarketPriceController@getChartData',
