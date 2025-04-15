@@ -5,6 +5,11 @@ services:
       dockerfile: docker/Dockerfile
     container_name: CryptoTrade_apache
     restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: ./docker/Dockerfile
+
     ports:
       - "8080:80"
     volumes:
@@ -22,7 +27,7 @@ services:
     image: mysql:8.0
     container_name: CryptoTrade_mysql
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
+    #command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: crypto_db
@@ -55,6 +60,10 @@ services:
       context: .
       dockerfile: daemon/Dockerfile
     container_name: CryptoTrade_market_simulator
+    develop:
+      watch:
+        - action: rebuild
+          path: ./daemon/Dockerfile
     volumes:
       - ./app:/app
     depends_on:
