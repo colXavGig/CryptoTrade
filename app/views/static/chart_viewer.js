@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+
+export default function initChartViewer()  {
     const chartCanvas = document.getElementById('crypto-chart');
     const tabContainer = document.getElementById('crypto-tabs');
     const rangeSelector = document.getElementById('data-range');
@@ -112,5 +113,5 @@ document.addEventListener('DOMContentLoaded', () => {
             loadChart(activeId);
         }
     }, 60000);
-});
+};
 
