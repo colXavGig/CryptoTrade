@@ -41,7 +41,7 @@ return [
     'api/user/register' => 'CryptoTrade\Controllers\UserController@register',
     'api/user/login' => 'CryptoTrade\Controllers\UserController@login',
     'api/user/logout' => 'CryptoTrade\Controllers\UserController@logout',
-    'api/user/verify-email' => 'CryptoTrade\Controllers\UserController@verifyEmail',
+    'api/user/verify-email' => 'CryptoTrade\Controllers\UserController@confirmEmail',
     'api/user/reset-password' => 'CryptoTrade\Controllers\UserController@resetPassword',
     'api/user/resend-verification-email' => 'CryptoTrade\Controllers\UserController@resendVerificationEmail',
 

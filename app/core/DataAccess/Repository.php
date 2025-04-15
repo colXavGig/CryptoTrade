@@ -42,7 +42,7 @@ abstract class Repository
         return $query->fetch();
     }
 
-    public function get_by(array $where)
+    public function get_by(array $where): void
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE ' . $this->whereStatement($where));
         $query->execute($where);
@@ -59,7 +59,7 @@ abstract class Repository
         return substr($whereStatement, 0, -strlen(' AND '));
     }
 
-    public function insert(array $data)
+    public function insert(array $data): false|string
     {
         $filteredData = array_intersect_key($data, array_flip($this->columns)); // Shouldn't this be a check?
         unset($filteredData['id']); // Ensure ID is never included
@@ -82,7 +82,7 @@ abstract class Repository
     }
 
 
-    public function update(array $data)
+    public function update(array $data): bool
     {
         if (!isset($data['id'])) {
             throw new InvalidArgumentException("Missing 'id' for update.");
@@ -112,7 +112,7 @@ abstract class Repository
     }
 
 
-    public function delete($id)
+    public function delete($id): bool
     {
         if (!is_numeric($id)) {
             throw new InvalidArgumentException("Invalid 'id' provided for deletion.");

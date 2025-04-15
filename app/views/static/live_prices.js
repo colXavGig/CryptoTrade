@@ -1,7 +1,6 @@
 export default function initLivePrices() {
     const tableBody = document.querySelector('#live-price-table tbody');
 
-    console.log("initLivePrices called");
     if (!tableBody) {
         console.warn('initLivePrices(): #live-price-table tbody not found.');
         return;
@@ -9,11 +8,9 @@ export default function initLivePrices() {
 
     const loadLivePrices = async () => {
         try {
-            console.log("Fetching live prices...");
             const res = await fetch('/?route=api/prices/with_previous');
             const { data } = await res.json();
 
-            console.log("Data received:", data);
 
             tableBody.innerHTML = '';
 
@@ -35,7 +32,6 @@ export default function initLivePrices() {
                     </tr>
                 `;
 
-                console.log("Appending row for", crypto.symbol);
                 tableBody.innerHTML += row;
             });
 
