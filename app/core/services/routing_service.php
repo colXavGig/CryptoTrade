@@ -21,7 +21,7 @@ if (isset($_GET['route']) && strpos($_GET['route'], 'api/') === 0) {
             $controller = new $className();
 
             if (method_exists($controller, $method)) {
-                $controller->$method(); // ✅ API controller method is called
+                $controller->$method();
                 exit;
             } else {
                 echo json_encode(['error' => "Method '$method' not found in '$className'"], JSON_PRETTY_PRINT);

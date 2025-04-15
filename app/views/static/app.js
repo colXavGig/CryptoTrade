@@ -1,77 +1,34 @@
-import { initLivePrices } from './live_prices.js';
-import { initChartViewer } from './chart_viewer.js';
+import initChartViewer from "./chart_viewer.js";
+import initLivePrices from "./live_prices.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    checkUserAuth();
-    setupSpaNavigation();
-    setupLogoutButton();
-    reinitializePage(getCurrentRoute()); // First time load
-    window.addEventListener("popstate", handlePopState); // Handle browser back/forward
-});
+// Widget initializer registry
+const widgetInitializers = [
+    {
+        requiredIds: ['live-price-table'],
+        init: initLivePrices
+    },
+    {
+        requiredIds: ['crypto-chart', 'crypto-tabs', 'data-range'],
+        init: initChartViewer
+    }
+];
 
-function getCurrentRoute() {
-    const path = window.location.pathname;
-    return path.startsWith('/') ? path.slice(1) : path;
-}
 
-function setupSpaNavigation() {
-    document.querySelectorAll(".spa-link").forEach(link => {
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const route = this.getAttribute("href");
-
-            history.pushState(null, "", "/" + route);
-            loadRouteContent(route);
-        });
+// Run all applicable widget initializers
+function initializeWidgets() {
+    widgetInitializers.forEach(({ requiredIds, init }) => {
+        const allExist = requiredIds.every(id => document.getElementById(id));
+        if (allExist) {
+            try {
+                init();
+            } catch (e) {
+                console.error(`Failed to initialize widget for IDs [${requiredIds.join(', ')}]:`, e);
+            }
+        }
     });
 }
 
-function loadRouteContent(route) {
-    fetch("index.php?route=" + route)
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            const newContent = doc.querySelector(".main-content").innerHTML;
-
-            document.querySelector(".main-content").innerHTML = newContent;
-
-            // Rebind everything
-            setupSpaNavigation();
-            setupLogoutButton();
-            reinitializePage(route);
-        })
-        .catch(err => {
-            console.error("Failed to load page:", err);
-        });
-}
-
-function handlePopState() {
-    const route = getCurrentRoute();
-    loadRouteContent(route);
-}
-
-function reinitializePage(route) {
-    switch (route) {
-        case "user-market":
-            initLivePrices();
-            initChartViewer();
-            break;
-        case "home":
-            initLivePrices();
-            initChartViewer();
-            break;
-        case "user-wallet":
-            // TODO: Add wallet-specific logic
-            break;
-        case "user-history":
-            // TODO: Add history transaction filtering logic
-            break;
-        default:
-            break;
-    }
-}
-
+// Check authentication and show user name if valid
 function checkUserAuth() {
     const token = sessionStorage.getItem("jwt");
 
@@ -83,12 +40,8 @@ function checkUserAuth() {
             .then(response => response.json())
             .then(data => {
                 if (data.user_name) {
-                    const greeting = document.getElementById("user-greeting");
-                    const authLinks = document.getElementById("auth-links");
-
-                    if (greeting) greeting.innerText = "Welcome " + data.user_name;
-                    if (authLinks) authLinks.style.display = "none";
-
+                    document.getElementById("user-greeting").innerText = "Welcome " + data.user_name;
+                    document.getElementById("auth-links").style.display = "none";
                     setupLogoutButton();
                 }
             })
@@ -98,6 +51,7 @@ function checkUserAuth() {
     }
 }
 
+// Setup the logout button
 function setupLogoutButton() {
     const logoutBtn = document.getElementById("logout-link");
     if (logoutBtn) {
@@ -106,11 +60,12 @@ function setupLogoutButton() {
     }
 }
 
+// Logout action
 function handleLogout(e) {
     e.preventDefault();
 
     const formData = new URLSearchParams();
-    formData.append("csrf_token", CSRF_TOKEN); // CSRF_TOKEN must be globally available
+    formData.append("csrf_token", CSRF_TOKEN);
 
     fetch("api/user/logout", {
         method: "POST",
@@ -120,14 +75,44 @@ function handleLogout(e) {
         body: formData.toString(),
         credentials: "include"
     })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
                 sessionStorage.removeItem("jwt");
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 500);
+                setTimeout(() => window.location.href = "/", 500);
             }
         })
-        .catch(error => console.error("Logout failed:", error));
+        .catch(err => console.error("Logout failed:", err));
 }
+
+// SPA navigation logic
+function setupSpaNavigation() {
+    document.querySelectorAll(".spa-link").forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const route = this.getAttribute("href");
+            history.pushState(null, "", "/" + route);
+
+            fetch("index.php?route=" + route)
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, "text/html");
+                    const newContent = doc.querySelector(".main-content").innerHTML;
+                    document.querySelector(".main-content").innerHTML = newContent;
+
+                    // Reinitialize dynamic behaviors
+                    setupLogoutButton();
+                    initializeWidgets();
+                });
+        });
+    });
+}
+
+// Entry point
+document.addEventListener("DOMContentLoaded", () => {
+    checkUserAuth();
+    setupSpaNavigation();
+    setupLogoutButton();
+    initializeWidgets();
+});
