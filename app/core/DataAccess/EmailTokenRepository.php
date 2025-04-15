@@ -2,47 +2,74 @@
 
 namespace CryptoTrade\DataAccess;
 
+use CryptoTrade\Models\EmailToken;
+use DateTime;
+
 class EmailTokenRepository extends Repository
 {
-    public function __construct()
+    private static ?EmailTokenRepository $instance = null;
+
+    protected function __construct()
     {
-        parent::__construct();
         $this->table = 'email_tokens';
-        $this->columns = ['id', 'user_id', 'token', 'type', 'created_at'];
+        $this->columns = EmailToken::getFieldNames(); // We assume you define this in the model
+        parent::__construct();
     }
 
-    // Get email token by token
-    public function get_by_token($token)
+    // Singleton access method
+    public static function getInstance(): EmailTokenRepository
+    {
+        if (self::$instance === null) {
+            self::$instance = new EmailTokenRepository();
+        }
+        return self::$instance;
+    }
+
+    public function getTokenById(int $id): ?EmailToken
+    {
+        $row = parent::get_by_id($id);
+        return $row ? EmailToken::fromArray($row) : null;
+    }
+
+    public function getTokenByToken(string $token): ?EmailToken
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE token = :token');
         $query->execute(['token' => $token]);
-        return $query->fetch();
+        $result = $query->fetch();
+        return $result ? EmailToken::fromArray($result) : null;
     }
 
-    // Get email token by user ID
-    public function get_by_user_id($user_id)
+    public function getTokenByUserId(string $user_id): ?EmailToken
     {
         $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE user_id = :user_id');
         $query->execute(['user_id' => $user_id]);
-        return $query->fetch();
+        $result = $query->fetch();
+        return $result ? EmailToken::fromArray($result) : null;
     }
 
-    // Delete email token by token
-    public function delete_by_token($token): void
+    public function createToken(EmailToken $token): void
+    {
+        parent::insert($token->toArray());
+    }
+
+    public function updateToken(EmailToken $token): void
+    {
+        parent::update($token->toArray());
+    }
+
+    public function deleteByToken(string $token): void
     {
         $query = $this->db->prepare('DELETE FROM ' . $this->table . ' WHERE token = :token');
         $query->execute(['token' => $token]);
     }
 
-    // Delete email token by user ID
-    public function delete_by_user_id($user_id): void
+    public function deleteByUserId(string $user_id): void
     {
         $query = $this->db->prepare('DELETE FROM ' . $this->table . ' WHERE user_id = :user_id');
         $query->execute(['user_id' => $user_id]);
     }
 
-    // Delete expired email tokens
-    public function delete_expired_tokens(): void
+    public function deleteExpiredTokens(): void
     {
         $query = $this->db->prepare('DELETE FROM ' . $this->table . ' WHERE expires_at < NOW()');
         $query->execute();

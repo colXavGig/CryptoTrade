@@ -1,19 +1,24 @@
-let livePriceInterval = null;
-
-export function initLivePrices() {
+export default function initLivePrices() {
     const tableBody = document.querySelector('#live-price-table tbody');
-    if (!tableBody) return; // gracefully abort if element doesn't exist
+
+    console.log("initLivePrices called");
+    if (!tableBody) {
+        console.warn('initLivePrices(): #live-price-table tbody not found.');
+        return;
+    }
 
     const loadLivePrices = async () => {
         try {
+            console.log("Fetching live prices...");
             const res = await fetch('/?route=api/prices/with_previous');
             const { data } = await res.json();
+
+            console.log("Data received:", data);
 
             tableBody.innerHTML = '';
 
             data.forEach(crypto => {
                 const prev = crypto.previous ?? crypto.price;
-
                 const trendIcon = crypto.price > prev
                     ? '<span class="trend-up">↑</span>'
                     : crypto.price < prev
@@ -30,18 +35,15 @@ export function initLivePrices() {
                     </tr>
                 `;
 
+                console.log("Appending row for", crypto.symbol);
                 tableBody.innerHTML += row;
             });
+
         } catch (err) {
             console.error('Failed to fetch live prices:', err);
         }
     };
 
-    // Clear previous intervals if any
-    if (livePriceInterval) {
-        clearInterval(livePriceInterval);
-    }
-
     loadLivePrices();
-    livePriceInterval = setInterval(loadLivePrices, 60000);
+    setInterval(loadLivePrices, 60000);
 }
