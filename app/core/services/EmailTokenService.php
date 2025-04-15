@@ -1,87 +1,80 @@
 <?php
+
 namespace CryptoTrade\Services;
 
 use CryptoTrade\DataAccess\EmailTokenRepository;
 use CryptoTrade\DataAccess\UserRepository;
 use CryptoTrade\Models\EmailToken;
 use CryptoTrade\Models\EmailTokenType;
+use CryptoTrade\Models\User;
 use DateTime;
 use InvalidArgumentException;
 use Random\RandomException;
 
 class EmailTokenService
 {
-    public static function confirmEmail($token): void
+    public static function confirmEmail(string $token): void
     {
-        if (!self::verifyToken($token, EmailTokenType::EMAIL_CONFIRMATION)) {
+        if (!self::isTokenValid($token, EmailTokenType::EMAIL_CONFIRMATION)) {
             throw new InvalidArgumentException("Invalid email confirmation token.");
         }
 
-        $email_token = EmailTokenRepository::getInstance()->getTokenByToken($token);
-        $user = (new UserRepository())->get_by_id($email_token->getUserId());
+        $emailToken = EmailTokenRepository::getInstance()->getTokenByToken($token);
+        $userData = (new UserRepository())->get_by_id($emailToken->getUserId());
 
-        if (!$user) {
+        if (!$userData) {
             throw new InvalidArgumentException("User not found.");
         }
 
-        $user['two_factor_enabled'] = true;
+        $user = User::fromArray($userData);
+        $user->two_factor_enabled = true;
+
         (new UserRepository())->update($user->toArray());
 
         self::deleteToken($token);
     }
 
-    private static function verifyToken($token, EmailTokenType $type): bool
+    public static function resetPassword(string $token): void
     {
-        $email_token = EmailTokenRepository::getInstance()->getTokenByToken($token);
-
-        if (!$email_token) return false;
-        if (!$email_token->getType()->equals($type)) return false;
-        if ($email_token->getExpiresAt() < new DateTime()) return false;
-
-        return true;
-    }
-
-    private static function deleteToken($token): void
-    {
-        EmailTokenRepository::getInstance()->deleteByToken($token);
-    }
-
-    public static function resetPassword($token): void
-    {
-        if (!self::verifyToken($token, EmailTokenType::PASSWORD_RESET)) {
+        if (!self::isTokenValid($token, EmailTokenType::PASSWORD_RESET)) {
             throw new InvalidArgumentException("Invalid password reset token.");
         }
 
-        $email_token = EmailTokenRepository::getInstance()->getTokenByToken($token);
-        $user = (new UserRepository())->get_by_id($email_token->getUserId());
+        $emailToken = EmailTokenRepository::getInstance()->getTokenByToken($token);
+        $userData = (new UserRepository())->get_by_id($emailToken->getUserId());
 
-        if (!$user) {
+        if (!$userData) {
             throw new InvalidArgumentException("User not found.");
         }
 
-        $user['password_hash'] = password_hash($token, PASSWORD_DEFAULT);
+        $user = User::fromArray($userData);
+        $user->password_hash = password_hash($token, PASSWORD_DEFAULT);
+
         (new UserRepository())->update($user->toArray());
 
         self::deleteToken($token);
     }
 
-    public static function resendVerificationToken($email, EmailTokenType $type): void
+    public static function resendVerificationToken(string $email, EmailTokenType $type): void
     {
-        $user = (new UserRepository())->get_by_email($email);
-        if (!$user) throw new InvalidArgumentException("User not found.");
-
-        $repo = EmailTokenRepository::getInstance();
-
-        $existing = $repo->getTokenByUserId($user['id']);
-        if ($existing) {
-            $repo->deleteByUserId($user['id']);
+        $userData = (new UserRepository())->get_by_email($email);
+        if (!$userData) {
+            throw new InvalidArgumentException("User not found.");
         }
 
-        $token = self::generateToken($user['id'], $type);
+        $userId = $userData['id'];
+        $repo = EmailTokenRepository::getInstance();
+
+        $existing = $repo->getTokenByUserId($userId);
+        if ($existing) {
+            $repo->deleteByUserId($userId);
+        }
+
+        $token = self::generateToken($userId, $type);
         self::sendToken($email, $token, $type);
     }
 
-    public static function generateToken($user_id, EmailTokenType $type): string
+    public static function generateToken(string $userId, EmailTokenType $type): string
     {
         try {
             $token = random_int(100000, 999999);
@@ -89,15 +82,15 @@ class EmailTokenService
             throw new RandomException("Failed to generate random token.");
         }
 
-        $expires_at = new DateTime('+30 minutes');
-        $email_token = new EmailToken($user_id, $token, $type, $expires_at);
+        $expiresAt = new DateTime('+30 minutes');
+        $emailToken = new EmailToken($userId, $token, $type, $expiresAt);
 
-        EmailTokenRepository::getInstance()->createToken($email_token);
+        EmailTokenRepository::getInstance()->createToken($emailToken);
 
-        return (string) $token;
+        return (string)$token;
     }
 
-    public static function sendToken($email, $token, EmailTokenType $type): void
+    public static function sendToken(string $email, string $token, EmailTokenType $type): void
     {
         $mailer = new MailService();
         $subject = '';
@@ -112,5 +105,21 @@ class EmailTokenService
         }
 
         $mailer->send($email, $subject, $message);
+    }
+
+    private static function isTokenValid(string $token, EmailTokenType $type): bool
+    {
+        $emailToken = EmailTokenRepository::getInstance()->getTokenByToken($token);
+
+        if (!$emailToken) return false;
+        if (!$emailToken->getType()->equals($type)) return false;
+        if ($emailToken->getExpiresAt() < new DateTime()) return false;
+
+        return true;
+    }
+
+    private static function deleteToken(string $token): void
+    {
+        EmailTokenRepository::getInstance()->deleteByToken($token);
     }
 }
