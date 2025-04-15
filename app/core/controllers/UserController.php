@@ -205,7 +205,6 @@ class UserController
                 'two_factor_enabled' => $decoded['two_factor_enabled']
             ]);
         } catch (Exception $e) {
-            http_response_code(401);
             echo json_encode(["success" => false, "error" => "Unauthorized"]);
         }
     }
