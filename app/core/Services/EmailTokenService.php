@@ -132,7 +132,7 @@ class EmailTokenService
 
         $email_token = new EmailToken($user_id, $token, $type, $expires_at);
         $email_token_repo = new EmailTokenRepository();
-        $email_token_repo->insert($email_token . toArray());
+        $email_token_repo->insert($email_token->toArray());
 
         return $token;
     }

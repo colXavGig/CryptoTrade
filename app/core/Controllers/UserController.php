@@ -11,8 +11,8 @@ use JetBrains\PhpStorm\NoReturn;
 use CryptoTrade\Services\Auth;
 
 require_once __DIR__ . '/../DataAccess/UserRepository.php';
-require_once __DIR__ . '/../services/auth.php';
-require_once __DIR__ . '/../services/JWTService.php';
+require_once __DIR__ . '/../Services/Auth.php';
+require_once __DIR__ . '/../Services/JWTService.php';
 
 class UserController
 {
