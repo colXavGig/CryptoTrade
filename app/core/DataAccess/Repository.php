@@ -6,7 +6,6 @@ use CryptoTrade\Services\Database;
 use InvalidArgumentException;
 
 require_once __DIR__ . '/Repository.php';
-require_once __DIR__ . '/../services/auth.php';
 
 abstract class Repository
 {
@@ -42,22 +41,26 @@ abstract class Repository
         return $query->fetch();
     }
 
-    public function get_by(array $where): void
+    public function get_by(array $where): ?array
     {
-        $query = $this->db->prepare('SELECT * FROM ' . $this->table . ' WHERE ' . $this->whereStatement($where));
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE ' . $this->whereStatement($where);
+        $query = $this->db->prepare($sql);
         $query->execute($where);
+        return $query->fetch() ?: null;
     }
+
 
     protected function whereStatement($where): string
     {
-        $whereStatement = 'WHERE ';
+        $conditions = [];
         foreach ($where as $key => $value) {
             assert(is_string($key));
             assert(in_array($key, $this->columns));
-            $whereStatement .= $key . ' = ' . $value . ' AND ';
+            $conditions[] = "$key = :$key";
         }
-        return substr($whereStatement, 0, -strlen(' AND '));
+        return implode(' AND ', $conditions);
     }
+
 
     public function insert(array $data): false|string
     {
