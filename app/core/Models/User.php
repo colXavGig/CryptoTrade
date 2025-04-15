@@ -13,12 +13,9 @@ class User implements RepoCompatibility
         "created_at",
     ];
     public $id;
-        public $email; // TODO: handle role with through inheritence
-    /* User should be an abstract class with Admin and... Client
-     as child ? They have different  behavior and admin doesnt need
-    balance/UserWallets */
-    public $role; // TODO: store balance in UserWallets
-public $balance;
+    public $email;
+    public $role;
+    public $balance;
     public $two_factor_enabled;
     public $created_at;
 
