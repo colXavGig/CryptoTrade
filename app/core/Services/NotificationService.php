@@ -19,7 +19,7 @@ class NotificationService
             'user_id' => $userId,
             'alert_id' => $alertId,
             'message' => $message,
-            'seen' => false,
+            'seen' => 0,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
