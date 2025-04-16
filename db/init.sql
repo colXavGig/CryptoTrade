@@ -86,10 +86,25 @@ user_id INT NOT NULL,
 crypto_id INT NOT NULL,
 price_threshold DECIMAL(18, 8) NOT NULL,
 alert_type ENUM('higher', 'lower') NOT NULL,
-notified BOOLEAN DEFAULT FALSE,
+active BOOLEAN DEFAULT TRUE,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+last_triggered_at TIMESTAMP NULL DEFAULT NULL,
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 FOREIGN KEY (crypto_id) REFERENCES cryptocurrencies(id) ON DELETE CASCADE
 );
+
+-- 8.5 Notifications Table
+CREATE TABLE notifications (
+id INT AUTO_INCREMENT PRIMARY KEY,
+user_id INT NOT NULL,
+alert_id INT NOT NULL,
+message TEXT NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+seen BOOLEAN DEFAULT FALSE,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+FOREIGN KEY (alert_id) REFERENCES alerts(id) ON DELETE CASCADE
+);
+
 
 -- 9. Logs Table
 CREATE TABLE logs (
