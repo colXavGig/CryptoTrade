@@ -26,10 +26,10 @@ class AlertController
 
             $data = [
                 'user_id' => $authUser['user_id'],
-                'crypto_id' => $_POST['crypto_id'] ?? throw new Exception("Missing crypto_id."),
-                'price_threshold' => $_POST['price_threshold'] ?? throw new Exception("Missing threshold."),
+                'crypto_id' => (int)($_POST['crypto_id'] ?? throw new Exception("Missing crypto_id.")),
+                'price_threshold' => (float)($_POST['price_threshold'] ?? throw new Exception("Missing threshold.")),
                 'alert_type' => $_POST['alert_type'] ?? throw new Exception("Missing alert type."),
-                'active' => true,
+                'active' => 1, // force as integer
                 'created_at' => date('Y-m-d H:i:s'),
                 'last_triggered_at' => null
             ];
@@ -40,6 +40,36 @@ class AlertController
             $this->sendError($e);
         }
     }
+
+    public function toggleStatus(): void
+    {
+        $this->requirePost();
+
+        try {
+            CSRFService::verifyToken($_POST['csrf_token'] ?? '');
+            JWTService::verifyJWT();
+
+            $id = $_POST['alert_id'] ?? throw new Exception("Missing alert_id.");
+
+            // allow numeric string "0" and "1"
+            if (!isset($_POST['active'])) {
+                throw new Exception("Missing 'active' value.");
+            }
+
+            $active = ($_POST['active'] === '1' || $_POST['active'] === 'true') ? 1 : 0;
+
+            $data = [
+                'id' => (int)$id,
+                'active' => $active
+            ];
+
+            $success = $this->alertService->update($data);
+            echo json_encode(['success' => $success, 'message' => $active ? 'Activated' : 'Deactivated']);
+        } catch (Exception $e) {
+            $this->sendError($e);
+        }
+    }
+
 
     public function delete(): void
     {
@@ -128,29 +158,7 @@ class AlertController
         }
     }
 
-    public function toggleStatus(): void
-    {
-        $this->requirePost();
 
-        try {
-            CSRFService::verifyToken($_POST['csrf_token'] ?? '');
-            JWTService::verifyJWT();
-
-            $id = $_POST['alert_id'] ?? throw new Exception("Missing alert_id.");
-            $active = filter_var($_POST['active'] ?? null, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            if (!isset($active)) throw new Exception("Missing or invalid 'active' value (true/false).");
-
-            $data = [
-                'id' => (int)$id,
-                'active' => $active
-            ];
-
-            $success = $this->alertService->update($data);
-            echo json_encode(['success' => $success, 'message' => $active ? 'Activated' : 'Deactivated']);
-        } catch (Exception $e) {
-            $this->sendError($e);
-        }
-    }
 
 
     private function requirePost(): void
