@@ -28,7 +28,7 @@ class MarketPriceService
 
         foreach ($cryptos as $crypto) {
             $price = $this->priceRepo->getLatestByCryptoId($crypto->id);
-            $latestPrices[] = [
+            $latestPrices[$crypto->id] = [
                 'id' => $crypto->id,
                 'name' => $crypto->name,
                 'symbol' => $crypto->symbol,

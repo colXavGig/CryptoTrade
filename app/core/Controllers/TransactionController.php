@@ -20,6 +20,17 @@ class TransactionController
         $this->walletService = new UserWalletService();
     }
 
+    public function addTransaction()
+    {
+        $this->requirePost();
+
+        if (isset($_POST['type']) && $_POST['type'] === 'buy') {
+            $this->buyCrypto();
+        } else if (isset($_POST['type']) && $_POST['type'] === 'sell') {
+            $this->sellCrypto();
+        }
+    }
+
     public function sellAll(): void
     {
         $this->requirePost();
@@ -59,7 +70,7 @@ class TransactionController
             $targetUserId = $_POST['user_id'] ?? $authUser['user_id'];
             $this->enforceAccess($authUser, $targetUserId);
 
-            $this->transactionService->sellCrypto((int)$targetUserId, (int)$cryptoId, (float)$amount);
+            $this->transactionService->sellCrypto((int)$targetUserId, (int)$cryptoId, floatval($amount));
             echo json_encode(['success' => true, 'message' => "Sold {$amount} successfully."]);
         } catch (Exception $e) {
             $this->sendError($e);

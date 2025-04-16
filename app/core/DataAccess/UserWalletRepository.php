@@ -64,6 +64,11 @@ class UserWalletRepository extends Repository
         return $list;
     }
 
+    /**
+     * get all user wallets of user
+     * @param int $userId
+     * @return array<UserWallet>
+     */
     public function getByUserId(int $userId): array
     {
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE user_id = :user_id");

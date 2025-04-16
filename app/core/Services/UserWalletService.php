@@ -16,7 +16,9 @@ class UserWalletService
     }
 
     /**
-     * Get all wallet entries for a user.
+     * Get all wallet entries for a user
+     * @param int $userId
+     * @return array<UserWallet>
      */
     public function getWalletForUser(int $userId): array
     {

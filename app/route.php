@@ -70,6 +70,7 @@ return [
 
     // ---------------------------- TRANSACTION API ROUTES (PSR-4 autoloaded) ----------------------------
     'api/user/transactions' => 'CryptoTrade\Controllers\TransactionController@getMyTransactions',
+    'api/user/transactions/add' => 'CryptoTrade\Controllers\TransactionController@addTransaction',
     'api/user/transactions/sell' => 'CryptoTrade\Controllers\TransactionController@sellCrypto',
     'api/user/transactions/sell_all' => 'CryptoTrade\Controllers\TransactionController@sellAll',
     'api/user/transactions/buy' => 'CryptoTrade\Controllers\TransactionController@buyCrypto',

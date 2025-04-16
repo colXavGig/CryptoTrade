@@ -51,6 +51,8 @@ class UserService
     {
         $userData = $this->userRepository->get_by_email($email);
 
+
+
         if (!$userData) {
             throw new Exception("User not found.");
         }
@@ -59,16 +61,8 @@ class UserService
             throw new Exception("Invalid credentials.");
         }
 
-        $user = User::fromArray($userData);
-
         // Generate JWT
-        $token = JWTService::generateToken([
-            'user_id' => $user->id,
-            'email' => $user->email,
-            'role' => $user->role,
-            'balance' => $user->balance,
-            'two_factor_enabled' => $user->two_factor_enabled,
-        ]);
+        $token = JWTService::generateToken($userData);
 
         // Start session and store token
         if (session_status() === PHP_SESSION_NONE) {

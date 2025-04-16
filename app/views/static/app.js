@@ -31,7 +31,6 @@ function initializeWidgets() {
 // Check authentication and show user name if valid
 function checkUserAuth() {
     const token = sessionStorage.getItem("jwt");
-console.log(token);
     if (token) {
         fetch("api/user/verify", {
             method: "GET",
