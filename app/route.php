@@ -86,6 +86,20 @@ return [
     'api/user/transactions/getByAmountRange' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByAmountRange',
     'api/user/transactions/getByTransactionId' => 'CryptoTrade\Controllers\TransactionController@getTransactionsByTransactionId',
 
+    // ---------------------------- NOTIFICATION API ROUTES (PSR-4 autoloaded) ----------------------------
+    'api/user/notifications/unseen' => 'CryptoTrade\Controllers\NotificationController@getUnseen',
+    'api/user/notifications/all' => 'CryptoTrade\Controllers\NotificationController@getAll',
+    'api/user/notifications/mark_seen' => 'CryptoTrade\Controllers\NotificationController@markSeen',
+
+    // ---------------------------- ALERT API ROUTES (PSR-4 autoloaded) ----------------------------
+    'api/user/alerts/create' => 'CryptoTrade\Controllers\AlertController@create',
+    'api/user/alerts/delete' => 'CryptoTrade\Controllers\AlertController@delete',
+    'api/user/alerts/getAll' => 'CryptoTrade\Controllers\AlertController@getAll', // Admin use
+    'api/user/alerts/getById' => 'CryptoTrade\Controllers\AlertController@getById',
+    'api/user/alerts/getByUserId' => 'CryptoTrade\Controllers\AlertController@getByUserId',
+    'api/user/alerts/update' => 'CryptoTrade\Controllers\AlertController@update',
+    'api/user/alerts/toggle' => 'CryptoTrade\Controllers\AlertController@toggleStatus',
+
 ];
 
 ?>

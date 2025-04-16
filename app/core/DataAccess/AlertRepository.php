@@ -36,4 +36,13 @@ class AlertRepository extends Repository
         $query = $this->db->prepare($sql);
         $query->execute(['id' => $alertId]);
     }
+
+    // get alerts by user
+    public function getAlertsByUser(int $userId): array
+    {
+        $sql = "SELECT * FROM alerts WHERE user_id = :user_id";
+        $query = $this->db->prepare($sql);
+        $query->execute(['user_id' => $userId]);
+        return array_map(fn($row) => Alert::fromArray($row), $query->fetchAll());
+    }
 }

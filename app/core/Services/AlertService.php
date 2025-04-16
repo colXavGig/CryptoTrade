@@ -23,6 +23,11 @@ class AlertService
         $alerts = $this->alertRepo->getActiveAlertsForCrypto($cryptoId);
 
         foreach ($alerts as $alert) {
+            // Skip if triggered recently (within 5 minutes)
+            if ($alert->last_triggered_at && strtotime($alert->last_triggered_at) > strtotime('-5 minutes')) {
+                continue;
+            }
+
             $shouldTrigger = (
                 $alert->type === AlertType::Higher && $price >= $alert->price_threshold
                 ||
@@ -30,7 +35,7 @@ class AlertService
             );
 
             if ($shouldTrigger) {
-                $message = sprintf( // sprintf is a method that formats a string
+                $message = sprintf(
                     "Price alert: Crypto #%d is now at %.8f (%s than %.8f)",
                     $alert->crypto_id,
                     $price,
@@ -48,6 +53,7 @@ class AlertService
             }
         }
     }
+
 
     public function create(array $data): string|false
     {
@@ -76,6 +82,11 @@ class AlertService
             throw new InvalidArgumentException("Alert not found.");
         }
         return Alert::fromArray($row);
+    }
+
+    public function getByUserId(int $userId): array
+    {
+        return $this->alertRepo->getAlertsByUser($userId);
     }
 
     public function getBy(array $where): ?Alert
