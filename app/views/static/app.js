@@ -1,6 +1,7 @@
 import initChartViewer from "./chart_viewer.js";
 import initLivePrices from "./live_prices.js";
 import initTransactionHistory from "./transactionHistory.js";
+import initUserForm from "./user_form.js";
 
 // Widget initializer registry
 const widgetInitializers = [
@@ -15,7 +16,34 @@ const widgetInitializers = [
     {
         requiredIds: ['transactions-table'],
         init: initTransactionHistory
+    },
+    {
+        requiredIds: ['user-form'],
+        init: () => {
+            fetch('/?route=api/user/verify')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        initUserForm({
+                            id: data.id,
+                            email: data.email,
+                            role: data.role,
+                            two_factor_enabled: data.two_factor_enabled
+                        });
+                    }
+                });
+        },
+
+    },
+    {
+        requiredIds: ['users-table'],
+        init: () => {
+            import('./admin_users.js')
+                .catch(err => console.error("Failed to load admin_users.js:", err));
+        }
     }
+
+
 ];
 
 

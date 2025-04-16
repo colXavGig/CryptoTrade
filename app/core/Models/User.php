@@ -8,7 +8,7 @@ class User implements RepoCompatibility
         "id",
         "email",
         "role",
-        "wallets",
+        "balance",
         "two_factor_enabled",
         "created_at",
     ];
