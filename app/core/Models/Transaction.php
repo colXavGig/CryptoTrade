@@ -19,7 +19,7 @@ class Transaction implements RepoCompatibility
     public int $id;
     public int $user_id;
     public int $crypto_id;
-    public TransactionType $transaction_type; // fix: Changed from int to string (it's an enum in the database) TODO: implement constants for transaction types buy, sell
+    public TransactionType $transaction_type; // fix: Changed from int to string (it's an enum in the database)
     public float $amount;
     public float $price;
     public DateTime $created_at;
