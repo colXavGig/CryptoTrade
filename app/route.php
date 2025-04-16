@@ -48,6 +48,7 @@ return [
     // Protected API Routes (JWT Required)
     'api/user/verify' => 'CryptoTrade\Controllers\UserController@verify',
     'api/user/getByEmail' => 'CryptoTrade\Controllers\UserController@getUserByEmail',
+    'api/user/getById' => 'CryptoTrade\Controllers\UserController@getUserById',
     'api/user/update' => 'CryptoTrade\Controllers\UserController@update',
 
     // Admin-Only Routes (JWT + Admin Role Required)

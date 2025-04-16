@@ -147,6 +147,25 @@ class UserController
         }
     }
 
+    //get by id
+    public function getUserById(): void
+    {
+        $this->checkAuthenticated();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
+            try {
+                $user = $this->userService->getUserById(trim($_GET['id']));
+                if ($user) {
+                    echo json_encode(['success' => true, 'user' => $user->toArray()]);
+                } else {
+                    throw new Exception("User not found.");
+                }
+            } catch (Exception $e) {
+                echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
     public function update(): void
     {
         $this->checkAuthenticated();
