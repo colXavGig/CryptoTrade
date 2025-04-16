@@ -24,6 +24,7 @@ require_once __DIR__ . '/core/Services/routing_service.php';
 <!-- index.php or layout.php or wherever your scripts are included -->
 <script type="module"  src="/views/static/chart_viewer.js"></script>
 <script type="module"  src="/views/static/live_prices.js"></script>
+<script type="module" src="/views/static/transactionHistory.js"></script>
 <script type="module" src="/views/static/app.js"></script>
 
 

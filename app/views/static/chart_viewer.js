@@ -9,11 +9,16 @@ export default function initChartViewer()  {
     const loadTabs = async () => {
         try {
             const res = await fetch('/?route=api/prices/live');
-            const { data } = await res.json();
+            const json = await res.json();
+
+            console.log("Received from /?route=api/prices/live:", json);
+
+            const { data } = json;
+            const cryptos = Object.values(data);
 
             tabContainer.innerHTML = '';
 
-            data.forEach(crypto => {
+            cryptos.forEach(crypto => {
                 const btn = document.createElement('button');
                 btn.textContent = crypto.symbol;
                 btn.classList.add('tab-btn');
@@ -26,16 +31,17 @@ export default function initChartViewer()  {
                 tabContainer.appendChild(btn);
             });
 
-            if (data.length > 0) {
+            if (cryptos.length > 0) {
                 const firstBtn = tabContainer.querySelector('button');
                 firstBtn.classList.add('active');
-                activeId = data[0].id;
-                loadChart(data[0].id);
+                activeId = cryptos[0].id;
+                await loadChart(cryptos[0].id);
             }
         } catch (err) {
             console.error('Failed to load crypto tabs:', err);
         }
     };
+
 
     const loadChart = async (cryptoId) => {
         try {
