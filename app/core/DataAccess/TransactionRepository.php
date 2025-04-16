@@ -46,7 +46,9 @@ class TransactionRepository extends Repository
 
     public function createTransaction(Transaction $transaction)
     {
-        parent::insert($transaction->toArray());
+        $arr = $transaction->toArray();
+        $arr['created_at'] = $transaction->created_at->format('Y-m-d H:i:s');
+        parent::insert($arr);
     }
 
     public function updateTransaction(Transaction $transaction)

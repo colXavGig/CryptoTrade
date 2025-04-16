@@ -20,6 +20,8 @@ class JWTService
         self::init();
         //TODO: solve the id not set issue
 
+
+
 //        if (!isset($user['id'], $user['email'], $user['role'])) {
 //            throw new Exception("Missing required user info for token generation.");
 //        }
@@ -51,6 +53,9 @@ class JWTService
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function verifyJWT(): array
     {
         self::init();

@@ -4,6 +4,7 @@ namespace CryptoTrade\Services;
 
 use CryptoTrade\DataAccess\UserRepository;
 use CryptoTrade\Models\Transaction;
+use CryptoTrade\Models\TransactionType;
 use CryptoTrade\Models\UserWallet;
 use CryptoTrade\DataAccess\TransactionRepository;
 use CryptoTrade\DataAccess\UserWalletRepository;
@@ -41,7 +42,7 @@ class TransactionService
             id: 0,
             user_id: $wallet->user_id,
             crypto_id: $wallet->crypto_id,
-            transaction_type: 'sell',
+            transaction_type: TransactionType::SELL,
             amount: $wallet->balance,
             price: $price,
             created_at: new DateTime()
@@ -77,7 +78,7 @@ class TransactionService
             throw new Exception("Latest market price unavailable.");
         }
 
-        $user = $this->userRepo->get_by_id($userId);
+        $user = $this->userRepo->get_user_by_id($userId);
         $wallet->balance -= $amount;
         $user->balance += $amount * $price;
 
@@ -88,7 +89,7 @@ class TransactionService
             id: 0,
             user_id: $userId,
             crypto_id: $cryptoId,
-            transaction_type: 'sell',
+            transaction_type: TransactionType::SELL,
             amount: $amount,
             price: $price,
             created_at: new DateTime()
@@ -104,7 +105,7 @@ class TransactionService
             throw new Exception("Current price unavailable for crypto ID: {$cryptoId}");
         }
 
-        $user = $this->userRepo->get_by_id($userId);
+        $user = $this->userRepo->get_user_by_id($userId);
         $cost = $amount * $price;
 
         if ($user->balance < $cost) {
@@ -119,7 +120,7 @@ class TransactionService
             id: 0,
             user_id: $userId,
             crypto_id: $cryptoId,
-            transaction_type: 'buy',
+            transaction_type: TransactionType::BUY,
             amount: $amount,
             price: $price,
             created_at: new DateTime()

@@ -28,4 +28,8 @@ class UserRepository extends Repository
         return $this->get_all();
     }
 
+    public function get_user_by_id(int $id): User
+    {
+        return User::fromArray($this->get_by_id($id));
+    }
 }

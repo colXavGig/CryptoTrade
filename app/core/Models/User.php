@@ -8,13 +8,14 @@ class User implements RepoCompatibility
         "id",
         "email",
         "role",
-        "balance",
+        "wallets",
         "two_factor_enabled",
         "created_at",
     ];
     public $id;
     public $email;
     public $role;
+    /** @var float $balance real money in USD */
     public $balance;
     public $two_factor_enabled;
     public $created_at;

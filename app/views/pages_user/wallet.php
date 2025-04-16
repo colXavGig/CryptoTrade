@@ -43,7 +43,7 @@ foreach ($prices as $crypto) {
                 if (!$crypto) continue;
                 $value = $wallet->balance * $crypto['price'];
                 ?>
-                <tr>
+                <tr style="color: yellow;">
                     <td><?= htmlspecialchars($crypto['name']) ?></td>
                     <td><?= htmlspecialchars($crypto['symbol']) ?></td>
                     <td><?= number_format($wallet->balance, 8) ?></td>
@@ -96,10 +96,10 @@ foreach ($cryptoRepo->getAllCryptoCurrencies() as $c) {
         </thead>
         <tbody>
         <?php foreach ($recentTransactions as $tx): ?>
-            <tr>
+            <tr style="color: yellow;">
                 <td><?= $tx->created_at->format('Y-m-d H:i') ?></td>
                 <td><?= htmlspecialchars($cryptos[$tx->crypto_id] ?? 'Unknown') ?></td>
-                <td><?= ucfirst($tx->transaction_type) ?></td>
+                <td><?= ucfirst($tx->transaction_type->value) ?></td>
                 <td><?= number_format($tx->amount, 8) ?></td>
                 <td>$<?= number_format($tx->price, 2) ?></td>
             </tr>

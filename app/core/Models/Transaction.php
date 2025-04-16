@@ -19,7 +19,7 @@ class Transaction implements RepoCompatibility
     public int $id;
     public int $user_id;
     public int $crypto_id;
-    public string $transaction_type; // fix: Changed from int to string (it's an enum in the database) TODO: implement constants for transaction types buy, sell
+    public TransactionType $transaction_type; // fix: Changed from int to string (it's an enum in the database) TODO: implement constants for transaction types buy, sell
     public float $amount;
     public float $price;
     public DateTime $created_at;
@@ -28,7 +28,7 @@ class Transaction implements RepoCompatibility
         int $id,
         int $user_id,
         int $crypto_id,
-        string $transaction_type, // Updated here too
+        TransactionType $transaction_type, // Updated here too
         float $amount,
         float $price,
         DateTime $created_at
@@ -51,7 +51,7 @@ class Transaction implements RepoCompatibility
             $array['id'],
             $array['user_id'],
             $array['crypto_id'],
-            $array['transaction_type'],
+            TransactionType::from($array['transaction_type']),
             $array['amount'],
             $array['price'],
             new DateTime($array['created_at'])
@@ -69,7 +69,7 @@ class Transaction implements RepoCompatibility
             'id' => $this->id,
             'user_id' => $this->user_id,
             'crypto_id' => $this->crypto_id,
-            'transaction_type' => $this->transaction_type,
+            'transaction_type' => $this->transaction_type->value,
             'amount' => $this->amount,
             'price' => $this->price,
             'created_at' => $this->created_at,
