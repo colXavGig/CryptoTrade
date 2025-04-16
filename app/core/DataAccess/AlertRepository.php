@@ -6,39 +6,34 @@ use CryptoTrade\Models\Alert;
 
 class AlertRepository extends Repository
 {
-    protected function __construct()
+    protected $table = 'alerts';
+    protected $columns;
+
+    public function __construct()
     {
         parent::__construct();
-        $this->table = "alerts";
         $this->columns = Alert::getFieldNames();
     }
 
-    public function getAllAlerts(): array
+    public function getActiveAlertsForCrypto(int $cryptoId): array
     {
-        $list = parent::get_all();
-        for ($i = 0; $i < count($list); $i++) {
-            $list[$i] = Alert::fromArray($list[$i]);
-        }
-        return $list;
+        $sql = "SELECT * FROM alerts WHERE crypto_id = :crypto_id AND active = 1";
+        $query = $this->db->prepare($sql);
+        $query->execute(['crypto_id' => $cryptoId]);
+        return array_map(fn($row) => Alert::fromArray($row), $query->fetchAll());
     }
 
-    public function getAlertById($id): Alert
+    public function updateLastTriggered(int $alertId): void
     {
-        return Alert::fromArray(parent::get_by_id($id));
+        $sql = "UPDATE alerts SET last_triggered_at = CURRENT_TIMESTAMP WHERE id = :id";
+        $query = $this->db->prepare($sql);
+        $query->execute(['id' => $alertId]);
     }
 
-    public function createAlert(Alert $alert)
+    public function deactivateAlert(int $alertId): void
     {
-        parent::insert($alert->toArray());
-    }
-
-    public function updateAlert(Alert $alert)
-    {
-        parent::update($alert->toArray());
-    }
-
-    public function deleteAlert(Alert $alert)
-    {
-        parent::delete($alert->id);
+        $sql = "UPDATE alerts SET active = 0 WHERE id = :id";
+        $query = $this->db->prepare($sql);
+        $query->execute(['id' => $alertId]);
     }
 }
