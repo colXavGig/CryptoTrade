@@ -47,17 +47,16 @@ FOREIGN KEY (crypto_id) REFERENCES cryptocurrencies(id) ON DELETE CASCADE
 );
 
 DELIMITER $$
-
-CREATE TRIGGER update_crypto_price
-BEFORE INSERT ON market_prices
-FOR EACH ROW
+CREATE TRIGGER trg_update_current_price
+    BEFORE INSERT ON market_prices
+    FOR EACH ROW
 BEGIN
-UPDATE cryptocurrencies
-SET current_price = NEW.price
-WHERE id = NEW.crypto_id;
+    UPDATE cryptocurrencies
+    SET current_price = NEW.price
+    WHERE id = NEW.crypto_id;
 END $$
-
 DELIMITER ;
+
 
 -- 6. Transactions Table
 CREATE TABLE transactions (
@@ -138,6 +137,14 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- INDEXES
+CREATE INDEX idx_alerts_user_id ON alerts(user_id);
+CREATE INDEX idx_alerts_crypto_id ON alerts(crypto_id);
+CREATE INDEX idx_transactions_user_id ON transactions(user_id);
+CREATE INDEX idx_transactions_crypto_id ON transactions(crypto_id);
+CREATE INDEX idx_notifications_user_id_seen ON notifications(user_id, seen);
+
+
 
 -- Insert Sample Cryptos 
 INSERT INTO cryptocurrencies (name, symbol, sign, initial_price, current_price, volatility)
@@ -187,16 +194,34 @@ VALUES
 ('min_deposit_amount', '50');
 
 -- Insert Sample Alerts
-INSERT INTO alerts (user_id, crypto_id, price_threshold, alert_type)
+INSERT INTO alerts (user_id, crypto_id, price_threshold, alert_type, active, created_at, last_triggered_at)
 VALUES
-(2, 1, 50000.00, 'higher'),
-(3, 3, 0.10, 'lower');
+-- User 2
+(2, 1, 50000.00, 'higher', TRUE, NOW(), NULL),
+(2, 2, 2500.00, 'lower', TRUE, NOW(), NULL),
+
+-- User 3
+(3, 3, 0.10, 'lower', TRUE, NOW(), NULL),
+(3, 5, 130.00, 'higher', TRUE, NOW(), NULL),
+
+-- User 4
+(4, 4, 1.01, 'higher', TRUE, NOW(), NULL),
+(4, 1, 44000.00, 'lower', TRUE, NOW(), NULL);
+
+-- Insert Sample Notifications
+INSERT INTO notifications (user_id, alert_id, message, created_at, seen)
+VALUES
+    (2, 1, 'Bitcoin has reached $50000.00', NOW(), FALSE),
+    (3, 2, 'Dogecoin has dropped below $0.10', NOW(), TRUE);
+
 
 -- Insert Sample Logs
 INSERT INTO logs (user_id, action, ip_address, user_agent)
 VALUES
 (2, 'Logged in', '192.168.1.1', 'Mozilla Firefox'),
 (3, 'Bought 1000 DOGE', '192.168.1.2', 'Google Chrome');
+
+
 
 -- Insert Sample Payments
 INSERT INTO payments (user_id, stripe_transaction_id, amount, status)
