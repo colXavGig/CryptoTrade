@@ -1,5 +1,6 @@
 import initChartViewer from "./chart_viewer.js";
 import initLivePrices from "./live_prices.js";
+import initTransactionHistory from "./transactionHistory.js";
 
 // Widget initializer registry
 const widgetInitializers = [
@@ -10,6 +11,10 @@ const widgetInitializers = [
     {
         requiredIds: ['crypto-chart', 'crypto-tabs', 'data-range'],
         init: initChartViewer
+    },
+    {
+        requiredIds: ['transactions-table'],
+        init: initTransactionHistory
     }
 ];
 

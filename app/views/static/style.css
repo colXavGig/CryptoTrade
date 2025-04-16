@@ -304,3 +304,61 @@ input {
 .trend-down {
     color: #ff3c3c;
 }
+
+
+/* Better input in table headers */
+th input,
+th select {
+    width: 90%;
+    padding: 4px;
+    font-size: 12px;
+    margin-top: 5px;
+    background-color: #222;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 4px;
+}
+
+/* Refine table layout */
+.wallet-table th,
+.wallet-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Pagination style improvement */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto 0;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-controls button {
+    padding: 6px 12px;
+    background: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+    background: #888;
+    cursor: not-allowed;
+}
+
+#page-info {
+    font-size: 14px;
+    padding: 4px 10px;
+    color: #eee;
+}
+input[type="number"],
+input[type="date"],
+select {
+    background-color: #1a1a1a;
+    color: #fff;
+    border: 1px solid #666;
+}
