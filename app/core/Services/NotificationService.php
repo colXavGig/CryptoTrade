@@ -45,4 +45,9 @@ class NotificationService
     {
         return $this->notificationRepo->delete($id);
     }
+
+    public function getLatestForAlert(int $id): \CryptoTrade\Models\RepoCompatibility
+    {
+        return $this->notificationRepo->getLatestForAlert($id);
+    }
 }

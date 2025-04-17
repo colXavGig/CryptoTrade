@@ -37,4 +37,13 @@ class NotificationRepository extends Repository
         $query->execute(['user_id' => $userId]);
         return array_map(fn($row) => Notification::fromArray($row), $query->fetchAll());
     }
+
+    public function getLatestForAlert(int $id): \CryptoTrade\Models\RepoCompatibility
+    {
+
+        $sql = "SELECT * FROM notifications WHERE alert_id = :alert_id ORDER BY created_at DESC LIMIT 1";
+        $query = $this->db->prepare($sql);
+        $query->execute(['alert_id' => $id]);
+        return Notification::fromArray($query->fetch());
+    }
 }
