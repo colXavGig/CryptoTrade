@@ -26,6 +26,7 @@
       <path value="$PROJECT_DIR$/app/vendor/vlucas/phpdotenv" />
       <path value="$PROJECT_DIR$/app/vendor/phpoption/phpoption" />
       <path value="$PROJECT_DIR$/app/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/app/vendor/stripe/stripe-php" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3">

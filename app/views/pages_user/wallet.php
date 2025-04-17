@@ -19,8 +19,13 @@ foreach ($prices as $crypto) {
     $cryptoMap[$crypto['id']] = $crypto;
 }
 ?>
+<script src="/views/static/checkout-return.js" defer></script>
 
-<div class="container">
+<div id="user-wallet" data-user-id="<?= $user['user_id'] ?>" class="container">
+    <h2>Your balance</h2>
+    $<span id="user-balance"><?= $user['balance'] ?></span>
+    <a href="/user-checkout" class="btn">Add balance</a>
+
     <h2>Your Wallet</h2>
 
     <?php if (empty($wallets)): ?>
@@ -51,7 +56,7 @@ foreach ($prices as $crypto) {
 
                     <td>
                         <form method="POST" action="/?route=api/user/wallet/delete">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <input type="hidden" name="csrf_token" id="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <input type="hidden" name="crypto_id" value="<?= $wallet->crypto_id ?>">
                             <button type="submit" onclick="return confirm('Sell all <?= $crypto['symbol'] ?>?')">Sell All</button>
                         </form>

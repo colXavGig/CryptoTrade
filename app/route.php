@@ -23,6 +23,7 @@ return [
     'user-market' => 'views/pages_user/market.php',
     'user-history' => 'views/pages_user/history.php',
     'user-report' => 'views/pages_user/report.php',
+    'user-checkout' => 'views/pages_user/add_balance.php',
 
 // Admin Dashboard Routes (JWT + Admin Role Required)
     'admin-dashboard' => 'views/pages_admin/dashboard.php',
@@ -44,6 +45,8 @@ return [
     'api/user/verify-email' => 'CryptoTrade\Controllers\UserController@confirmEmail',
     'api/user/reset-password' => 'CryptoTrade\Controllers\UserController@resetPassword',
     'api/user/resend-verification-email' => 'CryptoTrade\Controllers\UserController@resendVerificationEmail',
+    'api/user/checkout' => 'CryptoTrade\Controllers\CheckoutController@checkout',                   // NOTE: not sure if we should
+    'api/user/checkout-status' => 'CryptoTrade\Controllers\CheckoutController@sessionStatus',       //  verify those two
 
     // Protected API Routes (JWT Required)
     'api/user/verify' => 'CryptoTrade\Controllers\UserController@verify',
