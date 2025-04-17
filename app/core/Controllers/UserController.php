@@ -182,7 +182,7 @@ class UserController
                     $_POST['role'] ?? 'user',
                     $_POST['balance'] ?? 0.00,
                     $_POST['two_factor_enabled'] ?? false,
-                    null
+                    null // @alex why null? will it overwrite the existing date?
                 );
 
                 $success = $this->userService->updateUser($user, $_POST['password'] ?? null);

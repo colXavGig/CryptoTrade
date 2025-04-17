@@ -30,7 +30,7 @@ foreach ($prices as $crypto) {
 }
 ?>
 
-<script defer>
+<script>
     let cryptoMap = <?= json_encode($cryptoMap) ?>;
     let wallets = <?= json_encode($wallets_by_crypto) ?>;
 
