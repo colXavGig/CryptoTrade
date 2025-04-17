@@ -56,6 +56,7 @@ if (isset($_SESSION['jwt'])) {
 
                     <li><a href="user-wallet" class="spa-link">Wallet</a></li>
                     <li><a href="user-market" class="spa-link">Market</a></li>
+                    <li><a href="user-payment" class="spa-link">Payment</a></li>
                     <li><a href="user-history" class="spa-link">History</a></li>
                     <li><a href="user-alerts" class="spa-link">Alerts</a></li>
                     <li><a href="user-report" class="spa-link">Report</a></li>

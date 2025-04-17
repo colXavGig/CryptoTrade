@@ -188,10 +188,18 @@ VALUES
 (3, 5, 'buy', 5.00, 120.00);
 
 -- Insert Sample Admin Settings
-INSERT INTO admin_settings (setting_key, setting_value)
-VALUES
+INSERT INTO admin_settings (setting_key, setting_value) VALUES
 ('max_transactions_per_day', '10'),
-('min_deposit_amount', '50');
+('min_deposit_amount', '25.00'),
+('2fa_required', 'true'),
+('auto_sell_threshold_percentage', '-10'),
+('invitation_required', 'true'),
+('initial_account_balance_usd', '1000'),
+('price_update_interval', '1'),
+('audit_log_retention_days', '90'),
+('max_failed_logins', '5'),
+('stripe_test_mode', 'true');
+
 
 -- Insert Sample Alerts
 INSERT INTO alerts (user_id, crypto_id, price_threshold, alert_type, active, created_at, last_triggered_at)

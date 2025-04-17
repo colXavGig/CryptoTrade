@@ -6,7 +6,7 @@ use CryptoTrade\Models\AdminSettings;
 
 class AdminSettingRepository extends Repository
 {
-    protected function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->table = "admin_settings";
@@ -27,17 +27,17 @@ class AdminSettingRepository extends Repository
         return AdminSettings::fromArray(parent::get_by_id($id));
     }
 
-    public function createAdminSetting(AdminSettings $adminSetting)
+    public function createAdminSetting(AdminSettings $adminSetting): void
     {
         parent::insert($adminSetting->toArray());
     }
 
-    public function updateAdminSetting(AdminSettings $adminSetting)
+    public function updateAdminSetting(AdminSettings $adminSetting): void
     {
         parent::update($adminSetting->toArray());
     }
 
-    public function deleteAdminSetting(AdminSettings $adminSetting)
+    public function deleteAdminSetting(AdminSettings $adminSetting): void
     {
         parent::delete($adminSetting->id);
     }
