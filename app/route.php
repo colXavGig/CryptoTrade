@@ -37,6 +37,8 @@ return [
 
 
     // ---------------------------- USER API ROUTES (PSR-4 autoloaded) ----------------------------
+    //**IMPORTANT**: the user API routes are prefixed with "api/user" to avoid conflicts with other APIs
+    // format controller@functions is a convention used in the project (parsed by the custom-made router)
 
     // Public API Routes (No JWT Required)
     'api/user/register' => 'CryptoTrade\Controllers\UserController@register',
@@ -102,6 +104,12 @@ return [
     'api/user/alerts/getByUserId' => 'CryptoTrade\Controllers\AlertController@getByUserId',
     'api/user/alerts/update' => 'CryptoTrade\Controllers\AlertController@update',
     'api/user/alerts/toggle' => 'CryptoTrade\Controllers\AlertController@toggleStatus',
+
+    // ---------------------------- ADMIN SETTINGS API ROUTES (PSR-4 autoloaded) ----------------------------
+    'api/admin/settings/getAll' => 'CryptoTrade\Controllers\AdminSettingController@getAll',
+    'api/admin/settings/update' => 'CryptoTrade\Controllers\AdminSettingController@update',
+    'api/admin/settings/delete' => 'CryptoTrade\Controllers\AdminSettingController@delete',
+
 
 ];
 
