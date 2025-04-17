@@ -77,7 +77,7 @@ function getCookie(name) {
 }
 
 function checkUserAuth() {
-    return new Promise((resolve) => { // ✅ ADD THIS RETURN
+    return new Promise((resolve) => {
         const token = getCookie("jwt");
 
         if (token) {
@@ -184,6 +184,12 @@ function setupSpaNavigation() {
         link.addEventListener("click", function (e) {
             e.preventDefault();
             const route = this.getAttribute("href");
+            console.log(route);
+            //temp fix - if route == admin-users, then redirect to admin-users //TODO: fix this later
+            if (route === "admin-users") {
+                window.location.href = "/admin-users"; //force redirect to rebind events
+                return;
+            }
             history.pushState(null, "", "/" + route);
 
             fetch("index.php?route=" + route)
