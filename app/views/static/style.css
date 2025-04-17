@@ -281,3 +281,12 @@ td {
 .controls {
     margin-bottom: 1rem;
 }
+.trend-up {
+    color: green;
+    font-weight: bold;
+}
+
+.trend-down {
+    color: red;
+    font-weight: bold;
+}
