@@ -58,8 +58,25 @@ services:
   market-simulator:
     build:
       context: .
-      dockerfile: daemon/Dockerfile
+      dockerfile: daemon/simulate_price/Dockerfile
     container_name: CryptoTrade_market_simulator
+    develop:
+      watch:
+        - action: rebuild
+          path: daemon/simulate_price/Dockerfile
+    volumes:
+      - ./app:/app
+    depends_on:
+      - mysql
+    networks:
+      - cryptoTrade_network
+    restart: unless-stopped
+
+  price-poller:
+    build:
+      context: .
+      dockerfile: daemon/watch_prices/Dockerfile
+    container_name: CryptoTrade_price_poller
     develop:
       watch:
         - action: rebuild
@@ -71,6 +88,7 @@ services:
     networks:
       - cryptoTrade_network
     restart: unless-stopped
+
 
 networks:
   cryptoTrade_network:

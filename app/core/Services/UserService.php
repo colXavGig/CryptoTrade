@@ -70,7 +70,7 @@ class UserService
         }
 
         $_SESSION['jwt'] = $token;
-        setcookie('jwt', $token, time() + 3600, "/");
+        setcookie('jwt', $token, time() + 3600*24, "/");
 
         return $token;
     }

@@ -27,6 +27,8 @@ require_once __DIR__ . '/core/Services/routing_service.php';
 <script type="module" src="/views/static/transactionHistory.js"></script>
 <script type="module" src="/views/static/user_form.js"></script>
 <script type="module" src="/views/static/admin_users.js"></script>
+<script type="module" src="/views/static/notification.js"></script>
+<script type="module" src="/views/static/user_alerts.js"></script>
 <script type="module" src="/views/static/app.js"></script>
 
 

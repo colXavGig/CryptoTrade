@@ -2,6 +2,7 @@ import initChartViewer from "./chart_viewer.js";
 import initLivePrices from "./live_prices.js";
 import initTransactionHistory from "./transactionHistory.js";
 import initUserForm from "./user_form.js";
+import initNotifications from "./notification.js";
 
 // Widget initializer registry
 const widgetInitializers = [
@@ -41,6 +42,14 @@ const widgetInitializers = [
             import('./admin_users.js')
                 .catch(err => console.error("Failed to load admin_users.js:", err));
         }
+    },
+    {
+        requiredIds: ['notification-list'],
+        init: initNotifications
+    },
+    {
+        requiredIds: ['alerts-table'],
+        init: () => import('./user_alerts.js').then(m => m.default())
     }
 
 
@@ -61,27 +70,79 @@ function initializeWidgets() {
     });
 }
 
-// Check authentication and show user name if valid
-function checkUserAuth() {
-    const token = sessionStorage.getItem("jwt");
-    if (token) {
-        fetch("api/user/verify", {
-            method: "GET",
-            headers: { "Authorization": "Bearer " + token }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.user_name) {
-                    document.getElementById("user-greeting").innerText = "Welcome " + data.user_name;
-                    document.getElementById("auth-links").style.display = "none";
-                    setupLogoutButton();
-                }
-            })
-            .catch(() => {
-                sessionStorage.removeItem("jwt");
-            });
-    }
+
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
 }
+
+function checkUserAuth() {
+    return new Promise((resolve) => {
+        const token = getCookie("jwt");
+
+        if (token) {
+            fetch("api/user/verify", {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.user_id) {
+                        window.AUTH_USER = {
+                            id: data.user_id,
+                            email: data.email,
+                            role: data.role
+                        };
+
+                        const greeting = document.getElementById("user-greeting");
+                        const authLinks = document.getElementById("auth-links");
+
+                        if (greeting) greeting.innerText = "Welcome " + data.email;
+                        if (authLinks) authLinks.style.display = "none";
+                    }
+                    resolve(); // done
+                })
+                .catch(() => {
+                    document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    resolve();
+                });
+        } else {
+            resolve();
+        }
+    });
+}
+
+
+
+
+
+function fetchUnseenNotificationCount() {
+    fetch("index.php?route=api/user/notifications/unseen", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `csrf_token=${CSRF_TOKEN}`
+    })
+        .then(res => res.json())
+        .then(data => {
+            const notifications = data.notifications || [];
+            const unseenCount = notifications.length;
+
+            const desktopBadge = document.getElementById("notif-count");
+            const mobileBadge = document.getElementById("notif-badge-mobile");
+
+            if (desktopBadge) {
+                desktopBadge.innerText = unseenCount > 0 ? unseenCount : '';
+            }
+
+            if (mobileBadge) {
+                mobileBadge.innerText = unseenCount > 0 ? unseenCount : '';
+            }
+        })
+        .catch(err => {
+            console.error("Failed to fetch notification count:", err);
+        });
+}
+
 
 // Setup the logout button
 function setupLogoutButton() {
@@ -123,6 +184,12 @@ function setupSpaNavigation() {
         link.addEventListener("click", function (e) {
             e.preventDefault();
             const route = this.getAttribute("href");
+            console.log(route);
+            //temp fix - if route == admin-users, then redirect to admin-users //TODO: fix this later
+            if (route === "admin-users") {
+                window.location.href = "/admin-users"; //force redirect to rebind events
+                return;
+            }
             history.pushState(null, "", "/" + route);
 
             fetch("index.php?route=" + route)
@@ -136,6 +203,9 @@ function setupSpaNavigation() {
                     // Reinitialize dynamic behaviors
                     setupLogoutButton();
                     initializeWidgets();
+                    fetchUnseenNotificationCount();
+
+
                 });
         });
     });
@@ -143,8 +213,11 @@ function setupSpaNavigation() {
 
 // Entry point
 document.addEventListener("DOMContentLoaded", () => {
-    checkUserAuth();
-    setupSpaNavigation();
-    setupLogoutButton();
-    initializeWidgets();
+    checkUserAuth().then(() => {
+        setupSpaNavigation();
+        setupLogoutButton();
+        initializeWidgets();
+        fetchUnseenNotificationCount();
+    });
 });
+

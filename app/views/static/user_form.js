@@ -7,12 +7,31 @@ export default function initUserForm(user = null) {
         form.email.value = user.email;
         form.role && (form.role.value = user.role);
         form.two_factor_enabled && (form.two_factor_enabled.value = user.two_factor_enabled ? "true" : "false");
-        form.balance;// && (form.balance.value = parseFloat(user.balance).toFixed(2));
+        form.balance && (form.balance.value = parseFloat(user.balance).toFixed(2)); // ✅ Prefill balance
     }
+
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();
         const formData = new FormData(form);
+
+        // Remove password if blank
+        const password = formData.get("password");
+        if (!password) {
+            formData.delete("password");
+        }
+
+        // Remove balance if blank
+        const balance = formData.get("balance");
+        if (balance === null || balance === "") {
+            formData.delete("balance");
+        }
+
+        // Normalize two_factor_enabled to integer
+        const twoFactor = formData.get("two_factor_enabled");
+        if (twoFactor !== null) {
+            formData.set("two_factor_enabled", twoFactor === "true" ? "1" : "0");
+        }
 
         fetch("/?route=api/user/update", {
             method: "POST",
@@ -24,15 +43,11 @@ export default function initUserForm(user = null) {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert("User updated successfully.");
-                    if (!user) location.reload(); // Reload on profile update
-                } else {
-                    alert("Error: " + data.error);
+                    location.reload(); // Reload on profile update
                 }
             })
             .catch(err => {
                 console.error("Update failed:", err);
-                alert("An error occurred while updating.");
             });
     });
 
@@ -52,15 +67,11 @@ export default function initUserForm(user = null) {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert("User deleted.");
                     location.reload();
-                } else {
-                    alert("Error: " + data.error);
                 }
             })
             .catch(err => {
                 console.error("Delete failed:", err);
-                alert("An error occurred while deleting.");
             });
     });
 }

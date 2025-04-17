@@ -1,6 +1,6 @@
 <?php
 
-require_once '../app/vendor/autoload.php';
+require_once '../../app/vendor/autoload.php';
 
 use CryptoTrade\DataAccess\MarketPriceRepository;
 use CryptoTrade\DataAccess\CryptoCurrencyRepository;
