@@ -108,6 +108,12 @@ nav {
         width: 100%;
         text-align: left;
     }
+
+}
+@media (min-width: 769px) {
+    .main-content {
+        width: 100%;
+    }
 }
 
 /* 🔹 Main Content */
@@ -120,6 +126,8 @@ nav {
     border-radius: 8px;
     color: #eee;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+
+    text-align: center;
 }
 
 /* 🔹 Footer */

@@ -30,17 +30,27 @@ class TransactionService
         $this->cryptoRepo = CryptoCurrencyRepository::getInstance();
     }
 
-    public function sellAll(UserWallet $wallet): void
+    public function sellAll(array|UserWallet $walletData): void
     {
+        // Convert array to UserWallet if necessary
+        $wallet = is_array($walletData) ? UserWallet::fromArray($walletData) : $walletData;
+
+        if (!$wallet instanceof UserWallet) {
+            throw new \InvalidArgumentException('Expected $wallet to be an instance of UserWallet or an array.');
+        }
+
+        // Fetch the latest price for the crypto
         $price = $this->marketRepo->getLatestByCryptoId($wallet->crypto_id)?->price;
         if (!$price) {
             throw new Exception("Current price unavailable for crypto ID: {$wallet->crypto_id}");
         }
 
+        // Check wallet balance
         if ($wallet->balance <= 0) {
             throw new Exception("Insufficient balance to sell.");
         }
 
+        // Create a transaction
         $transaction = new Transaction(
             id: 0,
             user_id: $wallet->user_id,
@@ -50,15 +60,28 @@ class TransactionService
             price: $price,
             created_at: new DateTime()
         );
-
         $this->transactionRepo->createTransaction($transaction);
 
+        // Update user balance
         $user = $this->userRepo->get_by_id($wallet->user_id);
-        $user->balance += $wallet->balance * $price;
-        $this->userRepo->update($user->toArray());
+        $this->updateUserBalance($user, $wallet->balance * $price);
 
+        // Update wallet balance
         $wallet->balance = 0;
         $this->walletRepo->upsert($wallet);
+    }
+
+    private function updateUserBalance(object|array $user, float $amount): void
+    {
+        if (is_object($user)) {
+            $user->balance += $amount;
+            $this->userRepo->update($user->toArray());
+        } elseif (is_array($user)) {
+            $user['balance'] += $amount;
+            $this->userRepo->update($user);
+        } else {
+            throw new \InvalidArgumentException('Unsupported user data type.');
+        }
     }
 
     public function sellCrypto(int $userId, int $cryptoId, float $amount): void

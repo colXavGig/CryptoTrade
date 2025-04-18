@@ -4,6 +4,7 @@ namespace CryptoTrade\Services;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+use CryptoTrade\DataAccess\UserRepository;
 use Dotenv\Dotenv;
 use Exception;
 use Firebase\JWT\JWT;
@@ -77,34 +78,11 @@ class JWTService
         }
 
         if (!$token) {
-            echo json_encode([
-                "success" => false,
-                "error" => "Missing JWT token",
-                "status" => 401
-            ]);
-            exit;
+            throw new Exception("Missing JWT token", 401);
         }
 
-        $decoded = self::getUserFromToken($token);
-
-        if (!$decoded || isset($decoded['error'])) {
-            echo json_encode([
-                "success" => false,
-                "error" => "Invalid or expired token",
-                "status" => 401
-            ]);
-            exit;
-        }
-
-        return [
-            "user_id" => $decoded['user_id'],
-            "email" => $decoded['email'],
-            "role" => $decoded['role'],
-            "balance" => $decoded['balance'],
-            "two_factor_enabled" => $decoded['two_factor_enabled']
-        ];
+        return self::getUserFromToken($token);
     }
-
     public static function getUserFromToken($token): array
     {
         self::init();
@@ -114,8 +92,26 @@ class JWTService
                 throw new Exception("JWT Algorithm is invalid or missing.");
             }
 
+            // Decode the token
             $decoded = JWT::decode($token, new Key(self::$secret_key, self::$algorithm));
-            return (array) $decoded;
+            $decodedArray = (array) $decoded;
+
+            // Re-fetch the user from the database using the user_id
+            $userRepo = new UserRepository();
+            $user = $userRepo->get_by_id($decodedArray['user_id']);
+
+            if (!$user) {
+                throw new Exception("User not found.");
+            }
+
+            // Return the updated user data
+            return [
+                "user_id" => $user->id,
+                "email" => $user->email,
+                "role" => $user->role,
+                "balance" => $user->balance,
+                "two_factor_enabled" => $user->two_factor_enabled,
+            ];
         } catch (Exception $e) {
             return ["error" => $e->getMessage()];
         }
