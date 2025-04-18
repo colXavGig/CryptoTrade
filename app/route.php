@@ -19,11 +19,11 @@ return [
     'user-dashboard' => 'views/pages_user/dashboard.php',
     'user-alerts' => 'views/pages_user/alerts.php',
     'user-wallet' => 'views/pages_user/wallet.php',
-    'user-payment' => 'views/pages_user/payment.php',
     'user-market' => 'views/pages_user/market.php',
     'user-history' => 'views/pages_user/history.php',
     'user-report' => 'views/pages_user/report.php',
     'user-checkout' => 'views/pages_user/add_balance.php',
+//    'user-payment' => 'views/pages_user/payment.php',
 
 // Admin Dashboard Routes (JWT + Admin Role Required)
     'admin-dashboard' => 'views/pages_admin/dashboard.php',
@@ -31,9 +31,10 @@ return [
     'admin-transactions' => 'views/pages_admin/transactions.php',
     'admin-settings' => 'views/pages_admin/settings.php',
     'admin-alerts' => 'views/pages_admin/alerts.php',
+    'admin-report' => 'views/pages_admin/report.php',
     'admin-logs' => 'views/pages_admin/logs.php',
     'admin-cryptos' => 'views/pages_admin/cryptos.php',
-    'admin-payments' => 'views/pages_admin/payments.php',
+//    'admin-payments' => 'views/pages_admin/payments.php',
 
 
     // ---------------------------- USER API ROUTES (PSR-4 autoloaded) ----------------------------
@@ -110,7 +111,10 @@ return [
     'api/admin/settings/update' => 'CryptoTrade\Controllers\AdminSettingController@update',
     'api/admin/settings/delete' => 'CryptoTrade\Controllers\AdminSettingController@delete',
 
-
+    // ---------------------------- ADMIN/USER REPORT API ROUTES (PSR-4 autoloaded) ----------------------------
+    'api/user/report' => 'CryptoTrade\Controllers\ReportController@getUserReport',
+    'api/admin/report' => 'CryptoTrade\Controllers\ReportController@getAdminReport',
+    'api/pdf/report' => 'CryptoTrade\Controllers\ReportController@downloadPDFReport',
 ];
 
 ?>

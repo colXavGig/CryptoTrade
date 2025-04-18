@@ -1,3 +1,2 @@
-<?php
-phpinfo(); // This will show all the PHP information
-?>
+<h1>About Us</h1>
+

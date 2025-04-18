@@ -6,7 +6,7 @@ use DateTime;
 
 class Log implements RepoCompatibility
 {
-    private const FIELD_NAMES = [
+    public const FIELD_NAMES = [
         "id",
         "user_id",
         "action",
@@ -34,8 +34,16 @@ class Log implements RepoCompatibility
     static function fromArray(array $array): Log
     {
         assert(is_array($array));
-        assert(count($array) === count(self::FIELD_NAMES));
-        assert(count($array) === count(array_intersect(array_keys($array), array_keys(self::FIELD_NAMES))));
+
+        $missingKeys = array_diff(self::FIELD_NAMES, array_keys($array));
+        if (!empty($missingKeys)) {
+            throw new \RuntimeException("Missing keys: " . implode(", ", $missingKeys));
+        }
+
+        $extraKeys = array_diff(array_keys($array), self::FIELD_NAMES);
+        if (!empty($extraKeys)) {
+            throw new \RuntimeException("Extra keys: " . implode(", ", $extraKeys));
+        }
 
         return new Log(
             $array['id'],
@@ -43,7 +51,7 @@ class Log implements RepoCompatibility
             $array['action'],
             $array['ip_address'],
             $array['user_agent'],
-            $array['created_at']
+            $array['created_at'] instanceof DateTime ? $array['created_at'] : new DateTime($array['created_at'])
         );
     }
 

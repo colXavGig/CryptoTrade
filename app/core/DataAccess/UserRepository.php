@@ -32,4 +32,14 @@ class UserRepository extends Repository
     {
         return User::fromArray($this->get_by_id($id));
     }
+
+    public function countUsers()
+    {
+        $query = "SELECT COUNT(*) as count FROM {$this->table}";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return (int)$result['count'];
+    }
 }
