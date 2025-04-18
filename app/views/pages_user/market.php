@@ -58,7 +58,7 @@ foreach ($cryptoRepo->getAllCryptoCurrencies() as $c) {
 
         <div class="form-group">
             <label for="amount">Amount</label>
-            <input type="number" id="amount" name="amount" class="form-control" min="0" step="0.001" value="0" oninput="updateTransactionSummary()">
+            <input type="number" id="amount" name="amount" class="form-control" min="0" step="0.001" value="0">
             <span id="amount-error" class="text-danger" hidden></span>
         </div>
 
@@ -74,91 +74,10 @@ foreach ($cryptoRepo->getAllCryptoCurrencies() as $c) {
         <button type="submit" class="btn btn-success w-100">Submit Transaction</button>
     </form>
 </div>
+<div id="transaction-data"
+     data-wallets='<?= json_encode($wallets_by_crypto) ?>'
+     data-cryptomap='<?= json_encode($cryptoMap) ?>'
+     data-balance='<?= isset($user['balance']) ? (float)$user['balance'] : 0 ?>'>
+</div>
 
-<script>
-    const wallets = <?= json_encode($wallets_by_crypto) ?>;
-    const cryptoMap = <?= json_encode($cryptoMap) ?>;
-    const userBalance = <?= isset($user['balance']) ? (float) $user['balance'] : 0 ?>;
-
-    const usdBalanceEl = document.getElementById("usd-balance");
-    const unitPriceEl = document.getElementById("unit-price");
-    const totalPriceEl = document.getElementById("total-price");
-    const cryptoHoldingEl = document.getElementById("crypto-holding");
-    const amountInput = document.getElementById("amount");
-    const cryptoSelect = document.getElementById("crypto_id");
-    const typeSelect = document.getElementById("type");
-    const errorSpan = document.getElementById("amount-error");
-    const priceInput = document.getElementById("price");
-
-    function formatCurrency(value) {
-        return isNaN(value) ? "$0.00" : `$${(+value).toFixed(2)}`;
-    }
-
-    function formatCrypto(value, decimals = 6) {
-        return isNaN(value) ? "0.000000" : (+value).toFixed(decimals);
-    }
-
-    function updateTransactionSummary() {
-        const cryptoId = cryptoSelect.value;
-        const amount = parseFloat(amountInput.value || 0);
-        const price = parseFloat(cryptoMap[cryptoId]?.price || 0);
-
-        const wallet = wallets[cryptoId] || { balance: 0 };
-        const holding = parseFloat(wallet.balance || 0);
-        const holdingValue = holding * price;
-        const totalTransaction = amount * price;
-
-        usdBalanceEl.textContent = formatCurrency(userBalance);
-        unitPriceEl.textContent = formatCurrency(price);
-        totalPriceEl.textContent = formatCurrency(totalTransaction);
-        cryptoHoldingEl.textContent = `${formatCrypto(holding)} ${cryptoMap[cryptoId]?.symbol || ""} (${formatCurrency(holdingValue)})`;
-
-        priceInput.value = price;
-
-        // Validation
-        const type = typeSelect.value;
-        if (type === 'buy' && totalTransaction > userBalance) {
-            errorSpan.textContent = `Not enough USD. You have ${formatCurrency(userBalance)}.`;
-            errorSpan.hidden = false;
-        } else if (type === 'sell' && amount > holding) {
-            errorSpan.textContent = `Not enough crypto. You own ${formatCrypto(holding)} ${cryptoMap[cryptoId]?.symbol}.`;
-            errorSpan.hidden = false;
-        } else {
-            errorSpan.hidden = true;
-            errorSpan.textContent = '';
-        }
-    }
-
-    document.getElementById("form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (!errorSpan.hidden) return;
-
-        fetch(this.action, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                csrf_token: document.getElementById("csrf_token").value,
-                crypto_id: cryptoSelect.value,
-                type: typeSelect.value,
-                amount: amountInput.value,
-                price: priceInput.value
-            })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success === true) {
-                    window.location.reload();
-                } else {
-                    throw new Error(data.error);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Transaction failed: " + err.message);
-            });
-    });
-
-    // Init on page load
-    document.addEventListener("DOMContentLoaded", updateTransactionSummary);
-</script>
 
