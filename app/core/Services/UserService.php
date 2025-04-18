@@ -112,4 +112,9 @@ class UserService
         $user->two_factor_enabled = $enabled;
         return $this->updateUser($user);
     }
+
+    public function countUsers()
+    {
+        return $this->userRepository->countUsers();
+    }
 }

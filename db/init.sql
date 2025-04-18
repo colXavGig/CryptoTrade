@@ -79,7 +79,7 @@ setting_value VARCHAR(255) NOT NULL
 );
 
 -- 8. Alerts Table
-CREATE TABLE alerts (
+CREATE TABLE ale rts (
 id INT AUTO_INCREMENT PRIMARY KEY,
 user_id INT NOT NULL,
 crypto_id INT NOT NULL,
@@ -115,6 +115,7 @@ user_agent TEXT NOT NULL,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 
 -- 10. Payments Table
 CREATE TABLE payments (
@@ -224,10 +225,33 @@ VALUES
 
 
 -- Insert Sample Logs
-INSERT INTO logs (user_id, action, ip_address, user_agent)
-VALUES
-(2, 'Logged in', '192.168.1.1', 'Mozilla Firefox'),
-(3, 'Bought 1000 DOGE', '192.168.1.2', 'Google Chrome');
+INSERT INTO logs (user_id, action, ip_address, user_agent, created_at) VALUES
+(2, 'Logged in', '192.168.0.10', 'Mozilla/5.0 Firefox', NOW() - INTERVAL 1 HOUR),
+(2, 'Viewed Dashboard', '192.168.0.10', 'Mozilla/5.0 Firefox', NOW() - INTERVAL 58 MINUTE),
+(2, 'Bought BTC', '192.168.0.10', 'Mozilla/5.0 Firefox', NOW() - INTERVAL 56 MINUTE),
+(2, 'Viewed Market', '192.168.0.10', 'Mozilla/5.0 Firefox', NOW() - INTERVAL 54 MINUTE),
+(2, 'Logged out', '192.168.0.10', 'Mozilla/5.0 Firefox', NOW() - INTERVAL 53 MINUTE),
+
+(3, 'Logged in', '192.168.0.20', 'Chrome/115.0', NOW() - INTERVAL 2 HOUR),
+(3, 'Viewed Wallet', '192.168.0.20', 'Chrome/115.0', NOW() - INTERVAL 118 MINUTE),
+(3, 'Sold DOGE', '192.168.0.20', 'Chrome/115.0', NOW() - INTERVAL 116 MINUTE),
+(3, 'Generated Report', '192.168.0.20', 'Chrome/115.0', NOW() - INTERVAL 114 MINUTE),
+(3, 'Logged out', '192.168.0.20', 'Chrome/115.0', NOW() - INTERVAL 112 MINUTE),
+
+(4, 'Failed Login Attempt', '192.168.0.30', 'Safari/15.6', NOW() - INTERVAL 3 HOUR),
+(4, 'Logged in', '192.168.0.30', 'Safari/15.6', NOW() - INTERVAL 178 MINUTE),
+(4, 'Viewed Market', '192.168.0.30', 'Safari/15.6', NOW() - INTERVAL 176 MINUTE),
+(4, 'Set Alert on ETH', '192.168.0.30', 'Safari/15.6', NOW() - INTERVAL 175 MINUTE),
+(4, 'Logged out', '192.168.0.30', 'Safari/15.6', NOW() - INTERVAL 174 MINUTE),
+
+-- Additional randomized logs
+(2, 'Reset Password', '192.168.0.11', 'Mozilla/5.0', NOW() - INTERVAL 1 DAY),
+(2, 'Enabled 2FA', '192.168.0.11', 'Mozilla/5.0', NOW() - INTERVAL 1 DAY + INTERVAL 2 HOUR),
+(3, 'Viewed Report', '192.168.0.21', 'Chrome/114.0', NOW() - INTERVAL 2 DAY),
+(3, 'Modified Alert', '192.168.0.21', 'Chrome/114.0', NOW() - INTERVAL 2 DAY + INTERVAL 1 HOUR),
+(4, 'Generated PDF Report', '192.168.0.31', 'Safari/15.6', NOW() - INTERVAL 3 DAY),
+(4, 'Deleted Alert', '192.168.0.31', 'Safari/15.6', NOW() - INTERVAL 3 DAY + INTERVAL 2 HOUR);
+
 
 
 

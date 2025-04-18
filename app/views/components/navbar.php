@@ -74,6 +74,7 @@ if (isset($_SESSION['jwt'])) {
                     <li><a href="admin-cryptos" class="spa-link">Cryptos</a></li>
                     <li><a href="admin-payments" class="spa-link">Payments</a></li>
                     <li><a href="admin-logs" class="spa-link">Logs</a></li>
+                    <li><a href="admin-report" class="spa-link">Report</a></li>
                     <li><a href="admin-settings" class="spa-link">Settings</a></li>
                 <?php endif; ?>
             </ul>
