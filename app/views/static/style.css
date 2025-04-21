@@ -148,10 +148,13 @@ input, select, button {
     width: 100%;
     padding: 0.5rem;
     font-size: 1rem;
-    background: #1a1a1a;
-    color: white;
+    background: white;
+    color: black;
     border: 1px solid #555;
     border-radius: 4px;
+}
+input[type=password] {
+    color:#111;
 }
 
 input[type="submit"], button {
