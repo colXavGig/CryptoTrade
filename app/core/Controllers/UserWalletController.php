@@ -105,14 +105,17 @@ class UserWalletController
                 throw new Exception("Permission denied.");
             }
 
-            $wallet = $this->walletService->getWalletByUserAndCrypto(
+            $walletData = $this->walletService->getWalletByUserAndCrypto(
                 (int)$targetUserId,
                 (int)$_POST['crypto_id']
             );
 
-            if (!$wallet) {
+            if (!$walletData) {
                 throw new Exception("Wallet not found.");
             }
+
+            // Ensure $wallet is an instance of UserWallet
+            $wallet = is_array($walletData) ? UserWallet::fromArray($walletData) : $walletData;
 
             // SELL ALL: convert crypto to USD and log transaction
             $transactionService = new TransactionService();

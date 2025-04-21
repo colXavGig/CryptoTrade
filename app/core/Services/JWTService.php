@@ -4,6 +4,7 @@ namespace CryptoTrade\Services;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+use CryptoTrade\DataAccess\UserRepository;
 use Dotenv\Dotenv;
 use Exception;
 use Firebase\JWT\JWT;
@@ -11,29 +12,26 @@ use Firebase\JWT\Key;
 
 class JWTService
 {
-    private static $secret_key;
-    private static $algorithm;
-    private static $expire_time;
+    private static string $secret_key;
+    private static string $algorithm;
+    private static int $expire_time;
 
-    public static function generateToken($user): string
+    public static function generateToken(array|object $user): string
     {
         self::init();
-        //TODO: solve the id not set issue
 
-
-
-//        if (!isset($user['id'], $user['email'], $user['role'])) {
-//            throw new Exception("Missing required user info for token generation.");
-//        }
+        if (!self::getField($user, 'id') || !self::getField($user, 'email') || !self::getField($user, 'role')) {
+            throw new Exception("Missing required user info for token generation.");
+        }
 
         $payload = [
             "iat" => time(),
             "exp" => time() + self::$expire_time,
-            "user_id" => $user['id'],
-            "email" => $user['email'],
-            "role" => $user['role'],
-            "balance" => $user['balance'],
-            "two_factor_enabled" => $user['two_factor_enabled'],
+            "user_id" => self::getField($user, 'id'), // kept for compatibility
+            "email" => self::getField($user, 'email'),
+            "role" => self::getField($user, 'role'),
+            "balance" => self::getField($user, 'balance', 0),
+            "two_factor_enabled" => self::getField($user, 'two_factor_enabled', false),
             "iss" => "CryptoTrade",
             "aud" => "CryptoTradeApp"
         ];
@@ -43,7 +41,7 @@ class JWTService
 
     public static function init(): void
     {
-        if (!self::$secret_key) {
+        if (!isset(self::$secret_key)) {
             $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
             $dotenv->load();
 
@@ -77,35 +75,19 @@ class JWTService
         }
 
         if (!$token) {
-            echo json_encode([
-                "success" => false,
-                "error" => "Missing JWT token",
-                "status" => 401
-            ]);
-            exit;
+            throw new Exception("Missing JWT token", 401);
         }
 
-        $decoded = self::getUserFromToken($token);
+        $userData = self::getUserFromToken($token);
 
-        if (!$decoded || isset($decoded['error'])) {
-            echo json_encode([
-                "success" => false,
-                "error" => "Invalid or expired token",
-                "status" => 401
-            ]);
-            exit;
+        if (isset($userData['error'])) {
+            throw new Exception($userData['error'], 401);
         }
 
-        return [
-            "user_id" => $decoded['user_id'],
-            "email" => $decoded['email'],
-            "role" => $decoded['role'],
-            "balance" => $decoded['balance'],
-            "two_factor_enabled" => $decoded['two_factor_enabled']
-        ];
+        return $userData;
     }
 
-    public static function getUserFromToken($token): array
+    public static function getUserFromToken(string $token): array
     {
         self::init();
 
@@ -115,9 +97,40 @@ class JWTService
             }
 
             $decoded = JWT::decode($token, new Key(self::$secret_key, self::$algorithm));
-            return (array) $decoded;
+
+            $userRepo = new UserRepository();
+            $user = $userRepo->get_by_id($decoded->user_id);
+
+            if (!$user) {
+                throw new Exception("User not found.");
+            }
+
+            return [
+                "id" => self::getField($user, 'id'),
+                "user_id" => self::getField($user, 'id'),
+                "email" => self::getField($user, 'email'),
+                "role" => self::getField($user, 'role'),
+                "balance" => self::getField($user, 'balance'),
+                "two_factor_enabled" => self::getField($user, 'two_factor_enabled')
+            ];
         } catch (Exception $e) {
             return ["error" => $e->getMessage()];
         }
+    }
+
+    /**
+     * Safe getter for both array and object access
+     */
+    private static function getField(array|object|null $source, string $field, mixed $default = null): mixed
+    {
+        if (is_array($source) && array_key_exists($field, $source)) {
+            return $source[$field];
+        }
+
+        if (is_object($source) && isset($source->$field)) {
+            return $source->$field;
+        }
+
+        return $default;
     }
 }

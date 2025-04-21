@@ -108,6 +108,12 @@ nav {
         width: 100%;
         text-align: left;
     }
+
+}
+@media (min-width: 769px) {
+    .main-content {
+        width: 100%;
+    }
 }
 
 /* 🔹 Main Content */
@@ -120,6 +126,8 @@ nav {
     border-radius: 8px;
     color: #eee;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+
+    text-align: center;
 }
 
 /* 🔹 Footer */
@@ -292,4 +300,38 @@ td {
 .trend-down {
     color: red;
     font-weight: bold;
+}
+/* 🔹 Transaction Summary Table */
+#summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #222;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 0.95rem;
+}
+
+#summary-table th,
+#summary-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #333;
+}
+
+#summary-table th {
+    background-color: #333 !important;
+    color: #fff !important;
+    width: 60%;
+    text-align: left;
+    font-weight: normal;
+}
+
+#summary-table td {
+    background-color: #1c1c1c !important;
+    color: #f5f5f5 !important;
+    text-align: right !important;
+}
+
+#summary-table tr:last-child td {
+    border-bottom: none;
 }

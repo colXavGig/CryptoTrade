@@ -2,6 +2,7 @@
 
 namespace CryptoTrade\Services;
 
+use CryptoTrade\DataAccess\CryptoCurrencyRepository;
 use CryptoTrade\DataAccess\UserRepository;
 use CryptoTrade\Models\Transaction;
 use CryptoTrade\Models\TransactionType;
@@ -18,6 +19,7 @@ class TransactionService
     private UserRepository $userRepo;
     private UserWalletRepository $walletRepo;
     private MarketPriceRepository $marketRepo;
+    private CryptoCurrencyRepository $cryptoRepo;
 
     public function __construct()
     {
@@ -25,19 +27,30 @@ class TransactionService
         $this->userRepo = new UserRepository();
         $this->walletRepo = UserWalletRepository::getInstance();
         $this->marketRepo = MarketPriceRepository::getInstance();
+        $this->cryptoRepo = CryptoCurrencyRepository::getInstance();
     }
 
-    public function sellAll(UserWallet $wallet): void
+    public function sellAll(array|UserWallet $walletData): void
     {
+        // Convert array to UserWallet if necessary
+        $wallet = is_array($walletData) ? UserWallet::fromArray($walletData) : $walletData;
+
+        if (!$wallet instanceof UserWallet) {
+            throw new \InvalidArgumentException('Expected $wallet to be an instance of UserWallet or an array.');
+        }
+
+        // Fetch the latest price for the crypto
         $price = $this->marketRepo->getLatestByCryptoId($wallet->crypto_id)?->price;
         if (!$price) {
             throw new Exception("Current price unavailable for crypto ID: {$wallet->crypto_id}");
         }
 
+        // Check wallet balance
         if ($wallet->balance <= 0) {
             throw new Exception("Insufficient balance to sell.");
         }
 
+        // Create a transaction
         $transaction = new Transaction(
             id: 0,
             user_id: $wallet->user_id,
@@ -47,15 +60,28 @@ class TransactionService
             price: $price,
             created_at: new DateTime()
         );
-
         $this->transactionRepo->createTransaction($transaction);
 
+        // Update user balance
         $user = $this->userRepo->get_by_id($wallet->user_id);
-        $user->balance += $wallet->balance * $price;
-        $this->userRepo->update($user->toArray());
+        $this->updateUserBalance($user, $wallet->balance * $price);
 
+        // Update wallet balance
         $wallet->balance = 0;
         $this->walletRepo->upsert($wallet);
+    }
+
+    private function updateUserBalance(object|array $user, float $amount): void
+    {
+        if (is_object($user)) {
+            $user->balance += $amount;
+            $this->userRepo->update($user->toArray());
+        } elseif (is_array($user)) {
+            $user['balance'] += $amount;
+            $this->userRepo->update($user);
+        } else {
+            throw new \InvalidArgumentException('Unsupported user data type.');
+        }
     }
 
     public function sellCrypto(int $userId, int $cryptoId, float $amount): void
@@ -204,5 +230,121 @@ class TransactionService
             $this->transactionRepo->getAllTransactions(),
             fn($t) => $t->amount >= $min && $t->amount <= $max
         );
+    }
+
+    public function getTotalVolume(): float|int
+    {
+        $transactions = $this->getAllTransactions();
+        $totalVolume = 0;
+
+        foreach ($transactions as $tx) {
+            $totalVolume += $tx->amount * $tx->price;
+        }
+        return $totalVolume;
+    }
+
+    public function getVolumeByCrypto(int $cryptoId): float|int
+    {
+        $transactions = $this->getTransactionsByCryptoId($cryptoId);
+        $totalVolume = 0;
+
+        foreach ($transactions as $tx) {
+            $totalVolume += $tx->amount * $tx->price;
+        }
+        return $totalVolume;
+    }
+    public function getVolumeByAllCryptos(): array
+    {
+        $cryptoRepo = \CryptoTrade\DataAccess\CryptoCurrencyRepository::getInstance();
+        $cryptos = $cryptoRepo->getAllCryptoCurrencies();
+        $result = [];
+
+        foreach ($cryptos as $crypto) {
+            $result[] = [
+                'crypto_id' => $crypto->id,
+                'symbol' => $crypto->symbol,
+                'volume' => $this->getVolumeByCrypto($crypto->id)
+            ];
+        }
+
+        return $result;
+    }
+
+
+    public function getTopUsersByVolume(): array
+    {
+        $transactions = $this->getAllTransactions();
+        $volumes = [];
+
+        foreach ($transactions as $tx) {
+            $volumes[$tx->user_id] = ($volumes[$tx->user_id] ?? 0) + ($tx->amount * $tx->price);
+        }
+
+        arsort($volumes);
+        $result = [];
+
+        foreach (array_slice($volumes, 0, 5, true) as $userId => $volume) {
+            $user = $this->userRepo->get_user_by_id($userId);
+            $result[] = ['user_id' => $userId, 'email' => $user->email, 'volume' => $volume];
+        }
+
+        return $result;
+    }
+
+    public function getDailyTransactionVolume(): array
+    {
+        $transactions = $this->getAllTransactions();
+        $dailyVolume = [];
+
+        foreach ($transactions as $tx) {
+            $date = $tx->created_at->format('Y-m-d');
+            $dailyVolume[$date] = ($dailyVolume[$date] ?? 0) + ($tx->amount * $tx->price);
+        }
+
+        ksort($dailyVolume);
+
+        $result = [];
+        foreach ($dailyVolume as $date => $volume) {
+            $result[] = ['date' => $date, 'volume' => $volume];
+        }
+
+        return $result;
+    }
+
+    public function getMostTradedCryptos(): array
+    {
+        $transactions = $this->getAllTransactions();
+        $counts = [];
+
+        foreach ($transactions as $tx) {
+            $counts[$tx->crypto_id] = ($counts[$tx->crypto_id] ?? 0) + 1;
+        }
+
+        arsort($counts);
+
+        $result = [];
+        foreach ($counts as $cryptoId => $count) {
+            $crypto = $this->cryptoRepo->getCryptoCurrencyById($cryptoId);
+            $result[] = ['crypto_id' => $cryptoId, 'symbol' => $crypto->symbol, 'count' => $count];
+        }
+
+        return $result;
+    }
+
+    public function getAverageTransactionValue(): float
+    {
+        $transactions = $this->getAllTransactions();
+        $count = count($transactions);
+
+        if ($count === 0) {
+            return 0;
+        }
+
+        $totalValue = 0;
+        foreach ($transactions as $tx) {
+            $totalValue += $tx->amount * $tx->price;
+        }
+
+        return $totalValue / $count;
     }
 }

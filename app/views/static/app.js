@@ -50,7 +50,12 @@ const widgetInitializers = [
     {
         requiredIds: ['alerts-table'],
         init: () => import('./user_alerts.js').then(m => m.default())
+    },
+    {
+        requiredIds: ['form'],
+        init: () => import('./transaction_form.js').then(m => m.default())
     }
+
 
 
 ];

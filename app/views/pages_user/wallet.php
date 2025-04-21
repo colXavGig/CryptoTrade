@@ -24,6 +24,7 @@ foreach ($prices as $crypto) {
 <div id="user-wallet" data-user-id="<?= $user['user_id'] ?>" class="container">
     <h2>Your balance</h2>
     $<span id="user-balance"><?= $user['balance'] ?></span>
+    <!-- @xav - balance from the token is not getting updated with transactions -> need to fetch from user service -->
     <a href="/user-checkout" class="btn">Add balance</a>
 
     <h2>Your Wallet</h2>
